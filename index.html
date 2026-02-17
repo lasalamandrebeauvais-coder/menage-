@@ -688,41 +688,70 @@
                 Fermer</button>
         </div>
 
-        <!-- Overview Cards -->
-        <div class="stitch-grid">
-            <div class="stitch-card">
-                <span class="stitch-label">KIT 180 (GRAND)</span>
-                <span id="stitch-stock-180" class="stitch-stat">--</span>
-                <div class="stitch-actions">
-                    <button class="stitch-btn" onclick="updateStock('180', -1)">-</button>
-                    <button class="stitch-btn" onclick="updateStock('180', +1)">+</button>
+        <!-- Tabs Navigation -->
+        <div style="display:flex; gap:10px; padding:20px;">
+            <button onclick="switchStockTab('kits')" id="tab-kits" class="stitch-btn"
+                style="font-size:1rem; background:var(--stitch-primary); color:black;">🛏️ Kits Linge</button>
+            <button onclick="switchStockTab('produits')" id="tab-produits" class="stitch-btn" style="font-size:1rem;">🫧
+                Produits</button>
+        </div>
+
+        <!-- CONTENT: KITS -->
+        <div id="content-kits">
+            <!-- Overview Cards -->
+            <div class="stitch-grid">
+                <div class="stitch-card">
+                    <span class="stitch-label">KIT 180 (GRAND)</span>
+                    <span id="stitch-stock-180" class="stitch-stat">--</span>
+                    <div class="stitch-actions">
+                        <button class="stitch-btn" onclick="updateStock('180', -1)">-</button>
+                        <button class="stitch-btn" onclick="updateStock('180', +1)">+</button>
+                    </div>
+                </div>
+                <div class="stitch-card">
+                    <span class="stitch-label">KIT 90 (PETIT)</span>
+                    <span id="stitch-stock-90" class="stitch-stat">--</span>
+                    <div class="stitch-actions">
+                        <button class="stitch-btn" onclick="updateStock('90', -1)">-</button>
+                        <button class="stitch-btn" onclick="updateStock('90', +1)">+</button>
+                    </div>
                 </div>
             </div>
-            <div class="stitch-card">
-                <span class="stitch-label">KIT 90 (PETIT)</span>
-                <span id="stitch-stock-90" class="stitch-stat">--</span>
-                <div class="stitch-actions">
-                    <button class="stitch-btn" onclick="updateStock('90', -1)">-</button>
-                    <button class="stitch-btn" onclick="updateStock('90', +1)">+</button>
+
+            <!-- Details -->
+            <div class="stitch-history">
+                <h3 style="margin-bottom:10px; font-size:1rem; opacity:0.8;">ℹ️ Composition des Kits</h3>
+                <div style="color:var(--stitch-text-dim); font-size:0.85rem; line-height:1.5;">
+                    <strong>Grand (180)</strong> : 1 Housse XL, 1 Drap 180, 2 Carrés, 2 Rect.<br>
+                    <strong>Petit (90)</strong> : 1 Housse S, 1 Drap 90, 1 Carré, 1 Rect.
+                </div>
+            </div>
+
+            <!-- History Log -->
+            <div class="stitch-history" style="flex-grow:1;">
+                <h3 style="margin-bottom:15px; font-size:1rem; opacity:0.8;">📅 Historique Mouvements</h3>
+                <div id="stitch-logs">
+                    <div class="stitch-log-item">Chargement...</div>
                 </div>
             </div>
         </div>
 
-        <!-- Details -->
-        <div class="stitch-history">
-            <h3 style="margin-bottom:10px; font-size:1rem; opacity:0.8;">ℹ️ Composition des Kits</h3>
-            <div style="color:var(--stitch-text-dim); font-size:0.85rem; line-height:1.5;">
-                <strong>Grand (180)</strong> : 1 Housse XL, 1 Drap 180, 2 Carrés, 2 Rect.<br>
-                <strong>Petit (90)</strong> : 1 Housse S, 1 Drap 90, 1 Carré, 1 Rect.
+        <!-- CONTENT: PRODUITS -->
+        <div id="content-produits" style="display:none; padding:20px; overflow-y:auto; padding-bottom:100px;">
+            <div id="admin-prod-actions" style="display:none; margin-bottom:20px;">
+                <button onclick="ouvrirModalAjoutProduit()"
+                    style="width:100%; padding:15px; background:var(--stitch-secondary); color:black; font-weight:bold; border-radius:8px;">+
+                    AJOUTER UN PRODUIT (Admin)</button>
             </div>
-        </div>
 
-        <!-- History Log -->
-        <div class="stitch-history" style="flex-grow:1;">
-            <h3 style="margin-bottom:15px; font-size:1rem; opacity:0.8;">📅 Historique Mouvements</h3>
-            <div id="stitch-logs">
-                <div class="stitch-log-item">Chargement...</div>
+            <div id="liste-produits-container">
+                <!-- Rempli par JS -->
             </div>
+
+            <button onclick="validerInventaireProduits()"
+                style="width:100%; padding:20px; background:var(--success); color:var(--success-text); font-size:1.2rem; font-weight:bold; border-radius:12px; margin-top:20px; box-shadow:0 4px 10px rgba(0,0,0,0.3);">
+                ✅ VALIDER INVENTAIRE & REASSORT
+            </button>
         </div>
     </div>
 
@@ -746,6 +775,9 @@
             </button>
             <button onclick="ouvrirAdminHistorique()" class="menu-btn" style="background:#CFD8DC; color:#37474F;">
                 📅 HISTORIQUE<br><small>(Journal des Ménages)</small>
+            </button>
+            <button onclick="ouvrirAdminBudget()" class="menu-btn" style="background:#FFAB91; color:#BF360C;">
+                💰 BUDGET CONSO<br><small>(Suivi Annuel)</small>
             </button>
         </div>
 
@@ -802,6 +834,27 @@
         <h2>Historique des Journées</h2>
         <div class="admin-section">
             <div id="liste-historique-menage" style="overflow-y: auto;"></div>
+        </div>
+        <button class="btn-retour" onclick="ouvrirAdminPanel()">RETOUR ADMIN</button>
+    </div>
+
+    <!-- SOUS-MENU 4 : BUDGET & CONSO -->
+    <div id="vue-admin-budget"
+        style="display:none; flex-direction:column; background:var(--background); min-height:100vh;">
+        <h2>Budget & Consommation 2026</h2>
+        <div class="admin-section" style="overflow-x:auto;">
+            <table style="font-size:0.8rem;">
+                <thead id="budget-thead">
+                    <!-- Rempli par JS (Mois) -->
+                </thead>
+                <tbody id="budget-tbody">
+                    <!-- Rempli par JS (Produits x Mois) -->
+                </tbody>
+            </table>
+            <div style="margin-top:20px; text-align:right;">
+                <button onclick="exportBudgetCSV()"
+                    style="background:#4CAF50; color:white; padding:10px; border-radius:5px;">📥 Exporter CSV</button>
+            </div>
         </div>
         <button class="btn-retour" onclick="ouvrirAdminPanel()">RETOUR ADMIN</button>
     </div>
@@ -937,6 +990,103 @@
                 { nom: "Cuisine / Sols", expert: 15, extra: 25 }
             ]
         };
+
+        // --- GESTION STOCKS & PRODUITS ---
+        const CONFIG_DEFAULT_PRODUITS = [
+            // 🚿 Salle de Bain
+            { id: "pq", nom: "Papier Toilette", categorie: "Salle de Bain", unite: "Rouleaux", icone: "🧻" },
+            { id: "mouchoirs", nom: "Mouchoirs", categorie: "Salle de Bain", unite: "Boites", icone: "🤧" },
+            { id: "savon", nom: "Savon Mains", categorie: "Salle de Bain", unite: "Flacons", icone: "🧼" },
+            { id: "shampoing", nom: "Shampoing", categorie: "Salle de Bain", unite: "Flacons", icone: "🧴" },
+            // 🫧 Entretien
+            { id: "vinaigre", nom: "Vinaigre Blanc", categorie: "Entretien", unite: "Litres", icone: "🧂" },
+            { id: "vaisselle", nom: "Produit Vaisselle", categorie: "Entretien", unite: "Flacons", icone: "🍽️" },
+            { id: "wc", nom: "Canard WC", categorie: "Entretien", unite: "Flacons", icone: "🚽" },
+            { id: "lessive", nom: "Lessive", categorie: "Entretien", unite: "Bidons", icone: "👕" },
+            { id: "soupline", nom: "Soupline", categorie: "Entretien", unite: "Bidons", icone: "🌸" },
+            { id: "blanchir", nom: "Poudre Blanchissante", categorie: "Entretien", unite: "Boites", icone: "✨" },
+            // 🧹 Matériel
+            { id: "sac_p", nom: "Sac Poubelle (Petit)", categorie: "Matériel", unite: "Rouleaux", icone: "🗑️" },
+            { id: "sac_g", nom: "Sac Poubelle (Grand)", categorie: "Matériel", unite: "Rouleaux", icone: "🚮" },
+            { id: "eponge", nom: "Éponge", categorie: "Matériel", unite: "Unités", icone: "🧽" },
+            { id: "brosse", nom: "Brosse Nettoyage", categorie: "Matériel", unite: "Unités", icone: "🧹" },
+            { id: "sopalin", nom: "Sopalin", categorie: "Matériel", unite: "Rouleaux", icone: "🧻" },
+            // ☕ Accueil
+            { id: "sucre", nom: "Sucre", categorie: "Accueil", unite: "Boites", icone: "🧂" },
+            { id: "cafe", nom: "Café", categorie: "Accueil", unite: "Boites", icone: "☕" },
+            { id: "the", nom: "Thé", categorie: "Accueil", unite: "Boites", icone: "🍵" },
+            { id: "tisane", nom: "Tisane", categorie: "Accueil", unite: "Boites", icone: "🌿" }
+        ];
+
+        function getProduits() {
+            let stored = localStorage.getItem('config_produits');
+            if (!stored) return CONFIG_DEFAULT_PRODUITS;
+            return JSON.parse(stored);
+        }
+
+        function saveProduits(produits) {
+            localStorage.setItem('config_produits', JSON.stringify(produits));
+        }
+
+        function ajouterProduit(nom, categorie, unite, icone) {
+            let produits = getProduits();
+            let id = 'prod_' + Date.now();
+            produits.push({ id, nom, categorie, unite, icone });
+            saveProduits(produits);
+            afficherStocksProduits(); // Rafraichir
+        }
+
+        function ouvrirModalAjoutProduit() {
+            let overlay = document.createElement('div');
+            overlay.className = 'modal-overlay';
+            overlay.style.display = 'flex';
+            overlay.innerHTML = `
+                <div class="modal-content">
+                    <h3>Ajouter un Produit</h3>
+                    <div class="form-group">
+                        <label>Nom du Produit</label>
+                        <input type="text" id="new-prod-nom" placeholder="Ex: Javel">
+                    </div>
+                    <div class="form-group">
+                        <label>Catégorie</label>
+                        <select id="new-prod-cat" style="width:100%; padding:10px;">
+                            <option value="Salle de Bain">Salle de Bain</option>
+                            <option value="Entretien">Entretien</option>
+                            <option value="Matériel">Matériel</option>
+                            <option value="Accueil">Accueil</option>
+                            <option value="Autre">Autre</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Unité</label>
+                        <input type="text" id="new-prod-unite" placeholder="Ex: Litres, Boites...">
+                    </div>
+                    <div class="form-group">
+                        <label>Icône (Emoji)</label>
+                        <input type="text" id="new-prod-icone" placeholder="Ex: 🧼" value="📦">
+                    </div>
+                    <div style="display:flex; gap:10px; margin-top:20px;">
+                        <button onclick="this.closest('.modal-overlay').remove()" style="flex:1; background:#ccc; padding:10px; border-radius:5px;">Annuler</button>
+                        <button onclick="validerAjoutProduit()" style="flex:1; background:var(--success); color:white; padding:10px; border-radius:5px;">Ajouter</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+        }
+
+        function validerAjoutProduit() {
+            let nom = document.getElementById('new-prod-nom').value;
+            let cat = document.getElementById('new-prod-cat').value;
+            let unite = document.getElementById('new-prod-unite').value;
+            let icone = document.getElementById('new-prod-icone').value;
+
+            if (nom && cat && unite) {
+                ajouterProduit(nom, cat, unite, icone);
+                document.querySelector('.modal-overlay:last-child').remove();
+            } else {
+                alert("Merci de remplir tous les champs !");
+            }
+        }
 
         // INITIALISATION SUPABASE (A REMPLACER AVEC VOS CLES)
         let client = null;
@@ -2225,12 +2375,205 @@
             if (count === 0) return alert("Aucun stagiaire trouvé dans le rapport.");
 
             texte += "Bon courage à tous ! 💪";
+
+            // Récupérer le lien
+            // On doit appeler getMagicLink de manière synchrone ici ou juste utiliser le nom
+            // Le helper getMagicLink est async ? Non pas besoin d'être async ici car getEquipe est synchrone (localstorage).
+            // Correction : getMagicLink ne devrait pas être async si getEquipe ne l'est pas.
+            // On va le laisser synchrone dans la def.
+
+            equipe.forEach(u => {
+                if (u.nom.toLowerCase().includes('stagiaire')) {
+                    // let userBlock = blocks.find(b => b.innerText.includes(u.nom) && b.style.background);
+                    // Pas de filtrage avancé ici, on envoie le lien global
+                    let identifiant = u.code || u.nom;
+                    let link = `${baseUrl}?u=${encodeURIComponent(identifiant)}`;
+                    // On envoie un message groupé WhatsApp donc on ne peut pas personnaliser le lien par destinataire dans le même message
+                    // SAUF si on génère un message avec tous les liens.
+                    // Le code précédent le faisait :
+                    /*
+                       texte += `👤 *${u.nom}* :\n`;
+                       texte += getTaskTextOnly(userBlock);
+                       texte += `🔗 Accès direct -> ${link}\n\n`;
+                    */
+                }
+            });
+
+            // Le code original de envoyerMessageStagiaires était correct, je le remets ici pour clarté si besoin
+            // Mais la fonction est déjà définie plus haut, je ne touche pas sauf si erreur.
+
             let url = `https://wa.me/?text=${encodeURIComponent(texte)}`;
             window.open(url, '_blank');
         }
 
+
+        // --- LOGIQUE STOCKS PRODUITS ---
+        function switchStockTab(tab) {
+            document.getElementById('content-kits').style.display = (tab === 'kits') ? 'block' : 'none';
+            document.getElementById('content-produits').style.display = (tab === 'produits') ? 'block' : 'none';
+
+            // Buttons style
+            document.getElementById('tab-kits').style.background = (tab === 'kits') ? 'var(--stitch-primary)' : 'var(--stitch-surface)';
+            document.getElementById('tab-kits').style.color = (tab === 'kits') ? 'black' : 'var(--stitch-text)';
+
+            document.getElementById('tab-produits').style.background = (tab === 'produits') ? 'var(--stitch-primary)' : 'var(--stitch-surface)';
+            document.getElementById('tab-produits').style.color = (tab === 'produits') ? 'black' : 'var(--stitch-text)';
+
+            if (tab === 'produits') afficherStocksProduits();
+        }
+
+        function afficherStocksProduits() {
+            const container = document.getElementById('liste-produits-container');
+            container.innerHTML = '';
+            let produits = getProduits();
+
+            // Group by category
+            let categories = {};
+            produits.forEach(p => {
+                if (!categories[p.categorie]) categories[p.categorie] = [];
+                categories[p.categorie].push(p);
+            });
+
+            // Check Admin Role for "Add Button" visibility
+            if (currentUser && (currentUser.role === 'admin' || currentUser.code === '1234')) {
+                document.getElementById('admin-prod-actions').style.display = 'block';
+            } else {
+                document.getElementById('admin-prod-actions').style.display = 'none';
+            }
+
+            // Génération HTML
+            for (let cat in categories) {
+                let html = `<h4 style="color:var(--stitch-primary); border-bottom:1px solid var(--stitch-border); padding-bottom:5px; margin-top:20px;">${cat}</h4>`;
+                categories[cat].forEach(p => {
+                    // input IDs: stock_[id] et need_[id]
+                    html += `
+                    <div style="display:flex; align-items:center; background:var(--stitch-surface); padding:10px; border-radius:12px; margin-bottom:10px; border:1px solid var(--stitch-border);">
+                        <div style="font-size:2rem; margin-right:15px;">${p.icone || '📦'}</div>
+                        <div style="flex-grow:1;">
+                            <div style="font-weight:bold; font-size:1.1rem; color:var(--stitch-text);">${p.nom}</div>
+                            <div style="font-size:0.8rem; color:var(--stitch-text-dim);">${p.unite}</div>
+                        </div>
+                        <div style="display:flex; flex-direction:column; align-items:end; gap:5px;">
+                            <label style="font-size:0.75rem; color: #aaa;">Reste</label>
+                            <input type="number" id="stock_${p.id}" placeholder="0" style="width:60px; padding:5px; background:#333; color:white; border:none; text-align:center; border-radius:4px;">
+                            
+                            <label style="font-size:0.75rem; color: var(--stitch-secondary);">Besoin</label>
+                            <input type="number" id="need_${p.id}" placeholder="0" style="width:60px; padding:5px; background:#004d40; color:white; border:1px solid var(--stitch-secondary); text-align:center; border-radius:4px;">
+                        </div>
+                    </div>`;
+                });
+                container.innerHTML += html;
+            }
+        }
+
+        function validerInventaireProduits() {
+            let produits = getProduits();
+            let movements = [];
+            let today = new Date().toISOString().split('T')[0];
+
+            produits.forEach(p => {
+                let stockInput = document.getElementById(`stock_${p.id}`);
+                let needInput = document.getElementById(`need_${p.id}`);
+
+                let stockVal = stockInput.value ? parseInt(stockInput.value) : null;
+                let needVal = needInput.value ? parseInt(needInput.value) : 0;
+
+                // Si une quantité "Besoin" est saisie, c'est une commande/demande
+                if (needVal > 0) {
+                    movements.push({
+                        date: today,
+                        produit_id: p.id,
+                        nom: p.nom,
+                        type: 'demande_achat',
+                        qte: needVal,
+                        auteur: currentUser ? currentUser.nom : 'Inconnu'
+                    });
+                }
+
+                // On pourrait aussi sauvegarder le "Reste" pour historique, mais le besoin principal est le réassort + conso annuelle
+                // La conso annuelle = total des achats validés.
+                // Ici on crée une "demande". L'admin devra la transformer en "achat" (ou on considère "Besoin" = "Consommé" pour simplifier ?)
+                // Le user a dit : "je veux connaitre notre consommation".
+                // Hypothèse : Ce qui est demandé en "Besoin" correspond à ce qui a été consommé (pour revenir au stock max) OU ce qu'il faut acheter.
+                // Simplification : On enregistre ces mouvements comme "Demandes". L'admin verra le total.
+            });
+
+            if (movements.length === 0) return alert("Aucune quantité 'Besoin' saisie.");
+
+            // Sauvegarde Historique Achats
+            let historique = JSON.parse(localStorage.getItem('historique_achats') || "[]");
+            historique = [...movements, ...historique];
+            localStorage.setItem('historique_achats', JSON.stringify(historique));
+
+            alert("Inventaire Validé ! ✅\nLes besoins ont été enregistrés pour l'Admin.");
+
+            // Reset inputs
+            produits.forEach(p => {
+                document.getElementById(`need_${p.id}`).value = '';
+            });
+        } let url = `https://wa.me/?text=${encodeURIComponent(texte)}`;
+        window.open(url, '_blank');
+        }
+
         // Démarrage
         initLogin();
+        // --- BUDGET VIEW LOGIC ---
+        function ouvrirAdminBudget() {
+            ouvrirSousMenu('vue-admin-budget');
+            afficherTableauBudget();
+        }
+
+        function afficherTableauBudget() {
+            const thead = document.getElementById('budget-thead');
+            const tbody = document.getElementById('budget-tbody');
+            const historique = JSON.parse(localStorage.getItem('historique_achats') || "[]");
+            const produits = getProduits();
+            const mois = ["Jan", "Fev", "Mar", "Avr", "Mai", "Juin", "Juil", "Août", "Sep", "Oct", "Nov", "Déc"];
+
+            // Build Header
+            let headerHtml = '<tr><th style="text-align:left;">Produit</th>';
+            mois.forEach(m => headerHtml += `<th>${m}</th>`);
+            headerHtml += '<th>TOTAL</th></tr>';
+            thead.innerHTML = headerHtml;
+
+            // Aggregate Data
+            let data = {}; // { prodId: { 0: 10, 1: 5 ... total: 15 } }
+
+            // Init data
+            produits.forEach(p => {
+                data[p.id] = { total: 0 };
+                for (let i = 0; i < 12; i++) data[p.id][i] = 0;
+            });
+
+            // Fill data
+            historique.forEach(h => {
+                let date = new Date(h.date);
+                let mIndex = date.getMonth(); // 0-11
+                if (data[h.produit_id]) {
+                    data[h.produit_id][mIndex] += parseInt(h.qte);
+                    data[h.produit_id].total += parseInt(h.qte);
+                }
+            });
+
+            // Build Body
+            tbody.innerHTML = '';
+            for (let id in data) {
+                let p = produits.find(x => x.id === id);
+                if (!p) continue;
+
+                let row = `<tr><td style="text-align:left; font-weight:bold;">${p.icone} ${p.nom}</td>`;
+                for (let i = 0; i < 12; i++) {
+                    let val = data[id][i];
+                    let style = val > 0 ? "color:var(--primary-dark); font-weight:bold;" : "color:#ccc;";
+                    row += `<td style="${style}">${val > 0 ? val : '-'}</td>`;
+                }
+                row += `<td style="background:#e8f5e9; font-weight:bold;">${data[id].total}</td></tr>`;
+                tbody.innerHTML += row;
+            }
+        }
+
+        // Init
+        // (Rien de spécial au chargement, tout est event-driven)
     </script>
 </body>
 
