@@ -653,8 +653,8 @@
                     <!-- Sera rempli automatiquement -->
                 </tbody>
             </table>
-            <button onclick="genererPlanningBot()"
-                style="width:100%; padding:15px; margin-bottom:20px; background:#673AB7; color:white; font-size:1.2rem; border-radius:8px; border:none; cursor:pointer;">🤖
+            <button id="btn-bot-chambres" onclick="genererPlanningBot()"
+                style="width:100%; padding:15px; margin-bottom:20px; background:#673AB7; color:white; font-size:1.2rem; border-radius:8px; border:none; cursor:pointer; display:none;">🤖
                 VOIR PLANNING (BOT)</button>
         </div>
         <button class="btn-retour" onclick="retourAccueil()">RETOUR MENU</button>
@@ -1597,10 +1597,12 @@
                 document.getElementById('btn-menu-admin').style.display = 'block';
                 document.getElementById('btn-menu-planning').style.display = 'block'; // Planning visible
                 document.getElementById('btn-reset-day').style.display = 'block';
+                if (document.getElementById('btn-bot-chambres')) document.getElementById('btn-bot-chambres').style.display = 'block';
             } else {
                 document.getElementById('btn-menu-admin').style.display = 'none';
                 document.getElementById('btn-menu-planning').style.display = 'none'; // Planning caché
                 document.getElementById('btn-reset-day').style.display = 'none';
+                if (document.getElementById('btn-bot-chambres')) document.getElementById('btn-bot-chambres').style.display = 'none';
             }
         }
 
