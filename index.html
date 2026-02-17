@@ -743,7 +743,6 @@
                     style="width:100%; padding:15px; background:var(--stitch-secondary); color:black; font-weight:bold; border-radius:8px;">+
                     AJOUTER UN PRODUIT (Admin)</button>
             </div>
-
             <div id="liste-produits-container">
                 <!-- Rempli par JS -->
             </div>
@@ -752,6 +751,14 @@
                 style="width:100%; padding:20px; background:var(--success); color:var(--success-text); font-size:1.2rem; font-weight:bold; border-radius:12px; margin-top:20px; box-shadow:0 4px 10px rgba(0,0,0,0.3);">
                 ✅ VALIDER INVENTAIRE & REASSORT
             </button>
+
+            <!-- Historique Produits Mobile -->
+            <div class="stitch-history" style="margin-top:30px;">
+                <h3 style="margin-bottom:15px; font-size:1rem; opacity:0.8;">📅 Dernières Demandes Validées</h3>
+                <div id="historique-produits-list">
+                    <!-- Rempli par JS -->
+                </div>
+            </div>
         </div>
     </div>
 
@@ -2419,7 +2426,43 @@
             document.getElementById('tab-produits').style.background = (tab === 'produits') ? 'var(--stitch-primary)' : 'var(--stitch-surface)';
             document.getElementById('tab-produits').style.color = (tab === 'produits') ? 'black' : 'var(--stitch-text)';
 
-            if (tab === 'produits') afficherStocksProduits();
+            if (tab === 'produits') {
+                afficherStocksProduits();
+                afficherHistoriqueProduits();
+            }
+        }
+
+        function afficherHistoriqueProduits() {
+            let container = document.getElementById('historique-produits-list');
+            if (!container) return;
+
+            let historique = JSON.parse(localStorage.getItem('historique_achats') || "[]");
+
+            // On ne garde que les demandes d'achats (au cas où on stocke autre chose)
+            let items = historique.filter(h => h.type === 'demande_achat');
+
+            // Tri décroissant (plus récent en haut)
+            // Note: h.date est YYYY-MM-DD.
+            // On peut juste reverse si c'est déjà trié ou sort.
+            items.reverse();
+
+            let html = '';
+            items.slice(0, 20).forEach(h => {
+                html += `
+                <div class="stitch-log-item" style="flex-direction:column; gap:5px; align-items:flex-start;">
+                    <div style="display:flex; justify-content:space-between; width:100%; font-weight:bold; color:var(--stitch-text);">
+                        <span>${h.nom}</span>
+                        <span style="color:var(--stitch-secondary); background:rgba(3, 218, 198, 0.1); padding:2px 8px; border-radius:10px;">x${h.qte}</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; width:100%; font-size:0.8rem; color:var(--stitch-text-dim);">
+                        <span>📅 ${h.date}</span>
+                        <span>👤 ${h.auteur || 'Inconnu'}</span>
+                    </div>
+                </div>`;
+            });
+
+            if (html === '') html = '<div class="stitch-log-item">Aucune demande récente.</div>';
+            container.innerHTML = html;
         }
 
         function afficherStocksProduits() {
