@@ -1,0 +1,2238 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧹</text></svg>">
+    <title>Appli-Ménage Inclusive</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --primary: #a8d8ea;
+            /* Pastel Blue */
+            --primary-dark: #05445E;
+            /* Contrast Text */
+            --secondary: #aa96da;
+            /* Pastel Purple */
+            --accent: #fcbad3;
+            /* Pastel Pink */
+            --background: #f8f9fa;
+            --surface: #ffffff;
+            --text-main: #2d3436;
+            --text-light: #636e72;
+            --success: #e2f0cb;
+            /* Pastel Green */
+            --success-text: #27ae60;
+            --warning: #ffdac1;
+            /* Pastel Orange */
+            --warning-text: #d35400;
+            --danger: #ffb7b2;
+            /* Pastel Red */
+            --danger-text: #c0392b;
+            --radius-sm: 12px;
+            --radius-md: 20px;
+            --radius-lg: 30px;
+            --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--background);
+            color: var(--text-main);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            /* Allow growth */
+        }
+
+        button {
+            border: none;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button:active {
+            transform: scale(0.96);
+        }
+
+        /* -- LOGIN -- */
+        .login-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .user-card {
+            width: 140px;
+            height: 140px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: var(--surface);
+            color: var(--text-main);
+            font-size: 1.1rem;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+            border: 2px solid transparent;
+        }
+
+        .user-card:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        /* -- MAIN MENU -- */
+        #menu-principal {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            background: var(--background);
+        }
+
+        /* --- DASHBOARD & LAYOUT (Desktop Grid) --- */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            /* 2 Colonnes sur PC */
+            gap: 20px;
+            padding: 20px;
+            flex-grow: 1;
+            align-content: start;
+            overflow-y: auto;
+            /* Scroll vertical */
+        }
+
+        /* --- BOUTONS MENU (Compact Desktop / Large Mobile) --- */
+        .menu-btn {
+            font-size: 1.1rem;
+            border-radius: var(--radius-md);
+            background: var(--surface);
+            color: var(--text-main);
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            min-height: 140px;
+            /* Confort PC */
+            padding: 15px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .menu-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .menu-btn small {
+            font-weight: 400;
+            opacity: 0.8;
+            margin-top: 5px;
+            font-size: 0.8rem;
+        }
+
+        /* Couleurs Thématiques Menu */
+
+        /* 1. Admin */
+        .menu-btn:nth-child(1) {
+            background: #607D8B;
+            color: white;
+        }
+
+        /* 2. Chambres */
+        .menu-btn:nth-child(2) {
+            background: #e2f0cb;
+            color: #2D6A4F;
+        }
+
+        /* 3. Communs */
+        .menu-btn:nth-child(3) {
+            background: #aa96da;
+            color: #fff;
+        }
+
+        /* 4. Planning Bot */
+        .menu-btn:nth-child(4) {
+            background: #ffdac1;
+            /* Pastel Orange */
+            color: #D35400;
+        }
+
+        /* 5. Stocks */
+        .menu-btn:nth-child(5) {
+            background: #d4f1f4;
+            /* Pastel Blue/Cyans */
+            color: #05445E;
+        }
+
+        /* Stocks */
+
+        /* -- GENERAL VIEWS -- */
+        div[id^="vue-"] {
+            background-color: var(--background);
+        }
+
+        /* Headers */
+        h1,
+        h2,
+        h3 {
+            color: var(--text-main);
+            margin: 0;
+            padding: 15px;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        /* Return Buttons & Standard Actions */
+        .btn-retour {
+            height: 60px;
+            width: 100%;
+            background: #fff;
+            color: #333;
+            border: 1px solid #ddd;
+            border-radius: var(--radius-md);
+            margin-top: 10px;
+            font-size: 1rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: var(--primary-dark);
+            border-radius: var(--radius-sm);
+            padding: 10px;
+        }
+
+        /* -- TABLES -- */
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-bottom: 20px;
+            background: var(--surface);
+            border-radius: var(--radius-sm);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+            table-layout: fixed;
+        }
+
+        th,
+        td {
+            padding: 12px 6px;
+            text-align: center;
+            border-bottom: 1px solid #f0f0f0;
+            word-wrap: break-word;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-light);
+        }
+
+        /* -- CHECKLIST -- */
+        #vue-taches {
+            padding: 15px;
+        }
+
+        .tache-item {
+            font-size: 1.2rem;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: var(--surface);
+            border-radius: var(--radius-sm);
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            align-items: center;
+            border: 1px solid rgba(0, 0, 0, 0.02);
+        }
+
+        .tache-checkbox {
+            width: 30px;
+            height: 30px;
+            margin-right: 15px;
+            accent-color: var(--primary-dark);
+            cursor: pointer;
+        }
+
+        /* --- MOBILE RESPONSIVE --- */
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+                /* Pile verticale */
+                gap: 10px;
+            }
+
+            .menu-btn {
+                min-height: 100px;
+                /* Plus compact mais accessible */
+                flex-direction: row;
+                /* Icône à gauche, texte à droite */
+                justify-content: flex-start;
+                padding: 15px;
+                text-align: left;
+                font-size: 1.1rem;
+            }
+
+            .menu-btn br {
+                display: none;
+            }
+
+            /* Enlève le saut de ligne */
+            .menu-btn small {
+                margin-left: auto;
+                font-size: 0.9rem;
+            }
+
+            /* Info à droite */
+
+            h1,
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            .user-card {
+                width: 100%;
+                /* Pleine largeur sur mobile */
+                height: 80px;
+                flex-direction: row;
+                justify-content: flex-start;
+                padding: 0 20px;
+                gap: 15px;
+                font-size: 1.2rem;
+            }
+
+            .user-card span {
+                margin-left: auto;
+            }
+
+            /* Tableaux défilants */
+            table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+
+            /* Boutons d'action plus gros */
+            button {
+                min-height: 48px;
+            }
+
+            .btn-retour {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                border-radius: 0;
+                z-index: 100;
+                box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+                margin: 0;
+                background: #fff;
+                color: var(--primary-dark);
+                font-weight: bold;
+                border-top: 1px solid #ddd;
+            }
+
+            /* Ajustement padding du bas pour ne pas cacher contenu derrière bouton retour fixe */
+            div[id^="vue-"] {
+                padding-bottom: 80px !important;
+            }
+        }
+
+        /* Shapes for Accessibility */
+        .shape {
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 15px;
+            border: 3px solid #2d3436;
+            box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        .shape-rectangle {
+            width: 50px;
+            height: 25px;
+            background: #fff;
+            border-radius: 4px;
+        }
+
+        .shape-rond {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #fff;
+        }
+
+        .shape-carre {
+            width: 40px;
+            height: 40px;
+            background: #fff;
+            border-radius: 6px;
+        }
+
+        .shape-points {
+            font-size: 30px;
+            border: none;
+            letter-spacing: 3px;
+            box-shadow: none;
+            margin-right: 10px;
+        }
+
+        /* -- ADMIN -- */
+        .admin-section {
+            background: var(--surface);
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 5px 0;
+            box-sizing: border-box;
+            border: 1px solid #ddd;
+            border-radius: var(--radius-sm);
+            background: #fdfdfd;
+            font-family: inherit;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: #fff;
+        }
+
+        /* Utility Helpers */
+        .hidden {
+            display: none !important;
+        }
+
+        .flex {
+            display: flex;
+        }
+
+        .flex-col {
+            flex-direction: column;
+        }
+
+        /* --- STITCH DESIGN SYSTEM (Dark Mode Scope) --- */
+        .stitch-dark {
+            --stitch-bg: #121212;
+            --stitch-surface: #1E1E1E;
+            --stitch-surface-hover: #2C2C2C;
+            --stitch-primary: #BB86FC;
+            --stitch-secondary: #03DAC6;
+            --stitch-text: #E0E0E0;
+            --stitch-text-dim: #A0A0A0;
+            --stitch-border: #333333;
+
+            background-color: var(--stitch-bg) !important;
+            color: var(--stitch-text) !important;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .stitch-dark h2,
+        .stitch-dark h3 {
+            color: var(--stitch-text) !important;
+            text-align: left;
+            padding-left: 0;
+        }
+
+        .stitch-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            padding: 20px;
+        }
+
+        .stitch-card {
+            background: var(--stitch-surface);
+            border: 1px solid var(--stitch-border);
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .stitch-stat {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--stitch-primary);
+            margin: 10px 0;
+        }
+
+        .stitch-label {
+            font-size: 0.9rem;
+            color: var(--stitch-text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-align: center;
+        }
+
+        .stitch-actions {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .stitch-btn {
+            flex: 1;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--stitch-border);
+            background: var(--stitch-surface-hover);
+            color: var(--stitch-text);
+            font-weight: 600;
+            font-size: 1.5rem;
+            line-height: 1;
+        }
+
+        .stitch-btn:active {
+            background: var(--stitch-primary);
+            color: #000;
+        }
+
+        .stitch-history {
+            margin: 0 20px 20px 20px;
+            background: var(--stitch-surface);
+            border-radius: 16px;
+            padding: 20px;
+        }
+
+        .stitch-log-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--stitch-border);
+            font-size: 0.9rem;
+            color: var(--stitch-text-dim);
+        }
+
+        /* --- MODAL STYLES --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+            color: var(--text-secondary);
+        }
+
+        .form-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .days-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            text-align: center;
+        }
+
+        .day-check input {
+            display: none;
+        }
+
+        .day-check label {
+            display: block;
+            padding: 8px 0;
+            background: #eee;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .day-check input:checked+label {
+            background: var(--primary);
+            color: white;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+
+    <div id="vue-login" class="flex flex-col">
+        <!-- Titre supprimé pour interface plus épurée -->
+        <div id="liste-users" class="login-grid"></div>
+    </div>
+
+    <div id="menu-principal" style="display:none;">
+        <div
+            style="display:flex; justify-content:space-between; align-items:center; padding:20px; background:var(--surface); box-shadow:var(--shadow-sm); margin-bottom:10px; border-radius:0 0 20px 20px;">
+            <h2 id="titre-bonjour" style="margin:0; font-size: 1.2rem;">Bonjour</h2>
+            <button class="btn-primary"
+                style="background:var(--danger); color:var(--danger-text); width:auto; padding: 8px 16px;"
+                onclick="deconnecter()">Se Déconnecter</button>
+        </div>
+
+        <div class="dashboard-grid">
+            <button id="btn-menu-admin" onclick="ouvrirAdminPanel()" class="menu-btn admin-color"
+                style="display:none;">⚙️ ADMINISTRATION<br><small>(Planning & Config)</small></button>
+            <button onclick="ouvrirSousMenu('vue-menu-chambres')" class="menu-btn">🛏️ CHAMBRES<br><small>(État &
+                    Ménage)</small></button>
+            <button onclick="ouvrirSousMenu('vue-menu-communs')" class="menu-btn">🧹 PARTIES COMMUNES</button>
+            <button id="btn-menu-planning" onclick="genererPlanningBot()" class="menu-btn"
+                style="background-color:#673AB7; display:none;">🤖
+                PLANNING<br><small>(Bot IA)</small></button>
+            <button onclick="ouvrirSousMenu('vue-menu-stocks')" class="menu-btn">🧺 STOCKS & INVENTAIRE</button>
+        </div>
+    </div>
+
+    <!-- Sous-menu Chambres -->
+    <div id="vue-menu-chambres" style="display:none; flex-direction:column; height:100vh; height:100dvh;">
+        <h2 style="text-align: center; padding: 10px;">Gestion des Chambres</h2>
+        <div style="padding: 10px; overflow-y: auto; flex-grow: 1;">
+            <button id="btn-reset-day"
+                style="background-color: var(--primary-dark); color: white; font-size: 1.2rem; height: 60px; margin-bottom: 20px; border-radius: var(--radius-md); width:100%; display:none; box-shadow:var(--shadow-sm);"
+                onclick="nouvelleJournee()">🌅 NOUVELLE JOURNÉE (Tout à zéro)</button>
+            <table id="tableau-chambres">
+                <thead>
+                    <tr>
+                        <th>Chambre</th>
+                        <th>Dispo</th>
+                        <th>État</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="corps-tableau">
+                    <!-- Sera rempli automatiquement -->
+                </tbody>
+            </table>
+            <button onclick="genererPlanningBot()"
+                style="width:100%; padding:15px; margin-bottom:20px; background:#673AB7; color:white; font-size:1.2rem; border-radius:8px; border:none; cursor:pointer;">🤖
+                VOIR PLANNING (BOT)</button>
+        </div>
+        <button class="btn-retour" onclick="retourAccueil()">RETOUR MENU</button>
+    </div>
+
+    <!-- Sous-menu Communs -->
+    <div id="vue-menu-communs" style="display:none; flex-direction:column; height:100vh; height:100dvh;">
+        <h2 style="text-align: center; padding: 10px;">Parties Communes</h2>
+        <div style="padding: 10px; overflow-y: auto; flex-grow: 1;">
+            <table id="tableau-communs">
+                <thead>
+                    <tr>
+                        <th>Zone / Tâche</th>
+                        <th>État</th>
+                    </tr>
+                </thead>
+                <tbody id="corps-tableau-communs">
+                    <!-- Sera rempli automatiquement -->
+                </tbody>
+            </table>
+        </div>
+        <button class="btn-retour" onclick="retourAccueil()">RETOUR MENU</button>
+    </div>
+
+    <!-- Sous-menu Stocks (Redesigned with STITCH) -->
+    <div id="vue-menu-stocks" class="stitch-dark" style="display:none; flex-direction:column; min-height:100vh;">
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:20px 20px 0 20px;">
+            <h2 style="margin:0;">📦 Gestion Stocks</h2>
+            <button onclick="retourAccueil()"
+                style="width:auto; height:auto; padding:8px 16px; background:var(--stitch-surface); color:var(--stitch-text); border:1px solid var(--stitch-border); border-radius:8px;">✕
+                Fermer</button>
+        </div>
+
+        <!-- Overview Cards -->
+        <div class="stitch-grid">
+            <div class="stitch-card">
+                <span class="stitch-label">KIT 180 (GRAND)</span>
+                <span id="stitch-stock-180" class="stitch-stat">--</span>
+                <div class="stitch-actions">
+                    <button class="stitch-btn" onclick="updateStock('180', -1)">-</button>
+                    <button class="stitch-btn" onclick="updateStock('180', +1)">+</button>
+                </div>
+            </div>
+            <div class="stitch-card">
+                <span class="stitch-label">KIT 90 (PETIT)</span>
+                <span id="stitch-stock-90" class="stitch-stat">--</span>
+                <div class="stitch-actions">
+                    <button class="stitch-btn" onclick="updateStock('90', -1)">-</button>
+                    <button class="stitch-btn" onclick="updateStock('90', +1)">+</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Details -->
+        <div class="stitch-history">
+            <h3 style="margin-bottom:10px; font-size:1rem; opacity:0.8;">ℹ️ Composition des Kits</h3>
+            <div style="color:var(--stitch-text-dim); font-size:0.85rem; line-height:1.5;">
+                <strong>Grand (180)</strong> : 1 Housse XL, 1 Drap 180, 2 Carrés, 2 Rect.<br>
+                <strong>Petit (90)</strong> : 1 Housse S, 1 Drap 90, 1 Carré, 1 Rect.
+            </div>
+        </div>
+
+        <!-- History Log -->
+        <div class="stitch-history" style="flex-grow:1;">
+            <h3 style="margin-bottom:15px; font-size:1rem; opacity:0.8;">📅 Historique Mouvements</h3>
+            <div id="stitch-logs">
+                <div class="stitch-log-item">Chargement...</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="vue-taches">
+        <h1 id="titre-chambre"></h1>
+        <div id="liste-taches"></div>
+        <button class="btn-retour" style="margin-top: 20px;" onclick="retourListe()">RETOUR CHAMBRES</button>
+        <button class="btn-retour" style="margin-top: 10px; background: var(--primary); color: var(--primary-dark);"
+            onclick="location.reload()">RETOUR ACCUEIL</button>
+    </div>
+
+    <!-- MENU ADMINISTRATION (Dashboard) -->
+    <div id="vue-admin-menu" style="display:none; flex-direction:column; height:100vh; height:100dvh;">
+        <h2>Administration</h2>
+        <div class="dashboard-grid">
+            <button onclick="ouvrirAdminEquipe()" class="menu-btn" style="background:#607D8B; color:white;">
+                👥 GESTION ÉQUIPE<br><small>(Planning & Présences)</small>
+            </button>
+            <button onclick="ouvrirAdminRH()" class="menu-btn" style="background:#90A4AE; color:white;">
+                📝 ESPACE RH<br><small>(Demandes de Congés)</small>
+            </button>
+            <button onclick="ouvrirAdminHistorique()" class="menu-btn" style="background:#CFD8DC; color:#37474F;">
+                📅 HISTORIQUE<br><small>(Journal des Ménages)</small>
+            </button>
+        </div>
+
+        <!-- Instructions Stéphane (Toujours visibles ici pour rappel rapide) -->
+        <div class="admin-section" style="margin: 20px; border-left: 5px solid #2196F3;">
+            <h3>📝 Rappel Action Quotidienne</h3>
+            <ol style="font-size: 1rem;">
+                <li><strong>Gestion Équipe</strong> : Cocher les présents.</li>
+                <li><strong>Menu Chambres</strong> : "🌅 Nouvelle Journée".</li>
+                <li><strong>Menu Chambres</strong> : Mettre à jour l'état (CLEAN/CHECK).</li>
+            </ol>
+            <button onclick="genererPlanningBot()"
+                style="width:100%; padding:15px; margin-top:10px; background:#673AB7; color:white; font-size:1.1rem; border-radius:8px; border:none; cursor:pointer;">
+                🤖 LANCER LE BOT INTELLIGENT</button>
+        </div>
+
+        <button class="btn-retour" onclick="retourAccueil()">RETOUR MENU PRINCIPAL</button>
+    </div>
+
+    <!-- SOUS-MENU 1 : GESTION EQUIPE -->
+    <div id="vue-admin-equipe"
+        style="display:none; flex-direction:column; background:var(--background); min-height:100vh;">
+        <h2>Gestion Équipe & Planning</h2>
+        <div class="admin-section">
+            <p>Cochez "Présent" pour afficher la personne sur l'écran d'accueil.</p>
+            <div id="planning-container" style="overflow-x:auto;"></div>
+            <button
+                style="margin-top:10px; background:#2196F3; color:white; padding:10px; font-size:1rem; border-radius:5px; width:100%;"
+                onclick="sauvegarderPlanning()">Enregistrer le Planning</button>
+        </div>
+        <button class="btn-retour" onclick="ouvrirAdminPanel()">RETOUR ADMIN</button>
+    </div>
+
+    <!-- SOUS-MENU 2 : RH -->
+    <div id="vue-admin-rh" style="display:none; flex-direction:column; background:var(--background); min-height:100vh;">
+        <h2>Espace RH - Congés</h2>
+        <div class="admin-section">
+            <h4>Nouvelle demande</h4>
+            <label>Début : <input type="date" id="date-debut"></label>
+            <label>Fin : <input type="date" id="date-fin"></label>
+            <button
+                style="height: 60px; font-size: 1.2rem; background: #4CAF50; color: white; width:100%; margin-top:10px;"
+                onclick="ajouterConge()">Valider la demande</button>
+            <hr style="margin:20px 0; border:0; border-top:1px solid #ddd;">
+            <h4>Historique</h4>
+            <ul id="liste-conges"></ul>
+        </div>
+        <button class="btn-retour" onclick="ouvrirAdminPanel()">RETOUR ADMIN</button>
+    </div>
+
+    <!-- SOUS-MENU 3 : HISTORIQUE -->
+    <div id="vue-admin-historique"
+        style="display:none; flex-direction:column; background:var(--background); min-height:100vh;">
+        <h2>Historique des Journées</h2>
+        <div class="admin-section">
+            <div id="liste-historique-menage" style="overflow-y: auto;"></div>
+        </div>
+        <button class="btn-retour" onclick="ouvrirAdminPanel()">RETOUR ADMIN</button>
+    </div>
+
+    <!-- VUE RÉSULTAT BOT -->
+    <div id="vue-bot-result"
+        style="display:none; flex-direction:column; background:var(--background); min-height:100vh; padding:20px;">
+        <h2>Résultat du Bot</h2>
+        <div id="rapport-bot" class="admin-section"></div>
+        <button class="btn-retour" onclick="ouvrirAdminPanel()">RETOUR ADMIN</button>
+    </div>
+
+    <!-- MODAL ÉDITION MEMBRE -->
+    <div id="modal-membre" class="modal-overlay">
+        <div class="modal-content">
+            <h3 id="modal-titre">Modifier Membre</h3>
+
+            <div class="form-group">
+                <label class="form-label">Identité</label>
+                <div class="form-row">
+                    <input type="text" id="m-nom" placeholder="Nom" style="flex:2; padding:10px;">
+                    <input type="text" id="m-code" placeholder="Code" style="flex:1; padding:10px;">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Horaires Matin (Début - Fin)</label>
+                <div class="form-row">
+                    <select id="m-matin-debut" style="flex:1; padding:10px;"></select>
+                    <span>à</span>
+                    <select id="m-matin-fin" style="flex:1; padding:10px;"></select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Horaires Après-Midi (Début - Fin)</label>
+                <div class="form-row">
+                    <select id="m-apres-debut" style="flex:1; padding:10px;"></select>
+                    <span>à</span>
+                    <select id="m-apres-fin" style="flex:1; padding:10px;"></select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Jours de Repos</label>
+                <div class="days-grid" id="m-repos-container">
+                    <!-- Généré par JS: Lun, Mar, Mer... -->
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Période de Stage (Optionnel)</label>
+                <div class="form-row">
+                    <input type="date" id="m-debut" style="flex:1; padding:10px;">
+                    <input type="date" id="m-fin" style="flex:1; padding:10px;">
+                </div>
+            </div>
+
+            <div class="form-group" style="background:#fff3cd; padding:10px; border-radius:8px;">
+                <label class="form-label">🏖️ Congés / Absences</label>
+                <div class="form-row">
+                    <input type="date" id="m-conge-debut" style="flex:1; padding:10px;">
+                    <input type="date" id="m-conge-fin" style="flex:1; padding:10px;">
+                </div>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; margin-top:20px;">
+                <button onclick="fermerModalMembre()"
+                    style="padding:10px; background:#ccc; border:none; border-radius:5px;">Annuler</button>
+                <button onclick="sauvegarderMembreDepuisModal()"
+                    style="padding:10px 20px; background:var(--success); color:white; border:none; border-radius:5px; font-weight:bold;">ENREGISTRER</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration issue de instructions.md
+        const CONFIG_CHAMBRES = [
+            { nom: "Canari", lits: "180", type: "standard" },
+            { nom: "Magnolia", lits: "180", type: "standard" },
+            { nom: "Turquoise", lits: "180", type: "distributeurs" },
+            { nom: "Cerise", lits: "180", type: "standard" },
+            { nom: "Vison", lits: "180", type: "standard" },
+            { nom: "Plume", lits: "180 + 90", type: "distributeurs" },
+            { nom: "Atelier", lits: "180 + 90", type: "cuisine" }
+        ];
+
+        // Configuration des parties communes
+        const CONFIG_COMMUNS = [
+            "Cuisine",
+            "Salle Petits Déj.",
+            "Couloir",
+            "Escalier",
+            "Terrasse",
+            "Cave",
+            "Fenêtres",
+            "Poussières"
+        ];
+
+        // Tâches communes (SDB, Poussière, etc.)
+        const TACHES_COMMUNES = [
+            { texte: "3. Salle de bain (Miroir/Lavabo)", forme: "shape-rectangle" }, // Vinaigre
+            { texte: "3. Douche / Baignoire", forme: "shape-rond" }, // Désinfectant
+            { texte: "3. WC", forme: "shape-carre" }, // Gel WC
+            { texte: "4. Poussières", icone: "🧹" },
+            { texte: "5. Aspirateur", icone: "🌪️" },
+            { texte: "6. Accueil (Café/Thé)", icone: "☕" },
+            { texte: "7. Poignées de porte", icone: "🚪" }
+        ];
+
+        // --- CONFIGURATION EQUIPE (Données par défaut) ---
+        const DEFAULT_EQUIPE = [
+            { id: 0, nom: "Stéphane", code: "1234", role: "admin", present: true, matin: "08h-12h", apres_midi: "14h-20h", repos: "Dim", debut: "", fin: "" },
+            { id: 1, nom: "Choedon", code: "111", role: "extra", present: true, matin: "09h-12h", apres_midi: "13h-16h", repos: "Sam-Dim", debut: "", fin: "" },
+            { id: 2, nom: "Stagiaire", code: "222", role: "extra", present: true, matin: "09h-12h", apres_midi: "13h-16h", repos: "Mer", debut: "", fin: "" }
+        ];
+        let currentUser = null;
+
+        // --- CONFIGURATION DU BOT ---
+        const CONFIG_BOT = {
+            temps_clean: { expert: 20, extra: 35 },
+            temps_check: { expert: 10, extra: 10 },
+            taches_hebdo: {
+                1: { nom: "Fenêtres", expert: 30, extra: 45 },       // Lundi
+                2: { nom: "Terrasse", expert: 15, extra: 25 },       // Mardi
+                3: { nom: "Poussières (Fond)", expert: 20, extra: 30 }, // Mercredi
+                4: { nom: "Cave / Stocks", expert: 20, extra: 30 },  // Jeudi
+                5: { nom: "Escalier / Couloir", expert: 15, extra: 25 }, // Vendredi
+                6: { nom: "Vérification Ext.", expert: 10, extra: 15 }, // Samedi
+                0: { nom: "Rangement Dimanche", expert: 10, extra: 15 } // Dimanche
+            },
+            taches_quotidiennes: [
+                { nom: "Cuisine / Sols", expert: 15, extra: 25 }
+            ]
+        };
+
+        // INITIALISATION SUPABASE (A REMPLACER AVEC VOS CLES)
+        let client = null;
+        try {
+            if (typeof supabase !== 'undefined') {
+                const supabaseUrl = 'https://xjxmzopsnqddojopxxgk.supabase.co';
+                const supabaseKey = 'sb_publishable_dSpox3ifE1qKS0sXxBz3Uw_KeclK4dN';
+                client = supabase.createClient(supabaseUrl, supabaseKey);
+            } else {
+                console.warn("Supabase non chargé (Mode hors ligne ou erreur script)");
+            }
+        } catch (e) { console.error("Erreur init Supabase", e); }
+
+        function ouvrirSousMenu(idVue) {
+            // Sécurité : On cache toutes les vues potentielles pour éviter les conflits
+            document.querySelectorAll('div[id^="vue-"]').forEach(div => {
+                if (div.id !== 'vue-login') div.style.display = 'none';
+            });
+            document.getElementById('menu-principal').style.display = 'none';
+
+            // On affiche la vue demandée
+            const target = document.getElementById(idVue);
+            if (target) {
+                target.style.display = 'flex';
+                if (idVue === 'vue-menu-stocks') chargerStocks();
+            }
+        }
+
+        function retourAccueil() {
+            document.querySelectorAll('div[id^="vue-"]').forEach(div => {
+                if (div.id !== 'vue-login') div.style.display = 'none';
+            });
+            document.getElementById('menu-principal').style.display = 'flex';
+            initTableauBord(); // Rafraichir les tables
+        }
+
+        function ouvrirChecklist(nomChambre) {
+            // Récupérer l'objet chambre complet depuis le nom
+            let chambre = CONFIG_CHAMBRES.find(c => c.nom === nomChambre);
+            if (!chambre) { alert("Erreur : Chambre introuvable " + nomChambre); return; }
+
+            document.getElementById('vue-menu-chambres').style.display = 'none';
+            document.getElementById('vue-taches').style.display = 'flex';
+            document.getElementById('titre-chambre').innerText = "Chambre " + chambre.nom;
+
+            const liste = document.getElementById('liste-taches');
+            liste.innerHTML = '';
+
+            // Bouton de validation explicite
+            const footer = document.querySelector('#vue-taches .footer-actions');
+            if (footer) {
+                footer.innerHTML = `<button class="btn-primary" style="background:var(--success); width:100%; padding:15px; font-size:1.2rem; margin-top:20px;" onclick="retourListe()">✅ VALIDER ET TERMINER</button>`;
+            }
+
+            // 1. Construction dynamique de la liste des tâches
+            let tachesDuJour = [];
+
+            // Tâche 1 & 2 : Linge spécifique selon la chambre
+            tachesDuJour.push({ texte: "1. Enlever draps sales", icone: "🧺" });
+
+            // Détails précis pour aider les Extras (selon vos instructions Inventaire)
+            const detailKit180 = "<br><span style='font-size:1.2rem; color:#555;'>👉 1 Drap Housse, 1 Housse Couette, 2 Taies Carrées, 2 Rect.</span>";
+            const detailKit90 = "<br><span style='font-size:1.2rem; color:#555;'>👉 + 1 Drap Housse 90, 1 Housse Couette, 1 Carrée, 1 Rect.</span>";
+
+            if (chambre.lits.includes("90")) {
+                tachesDuJour.push({ texte: "2. Kit Lit 180 + Kit 90" + detailKit180 + detailKit90, icone: "🛏️" });
+            } else {
+                tachesDuJour.push({ texte: "2. Kit Lit 180" + detailKit180, icone: "🛏️" });
+            }
+            // Ajout explicite du linge de toilette (oublié dans la version précédente)
+            tachesDuJour.push({ texte: "2b. Linge de Toilette<br><span style='font-size:1.2rem; color:#555;'>👉 2 Grandes, 2 Moyennes, 1 Tapis</span>", icone: "🛁" });
+
+            // Tâches communes
+            tachesDuJour = tachesDuJour.concat(TACHES_COMMUNES);
+
+            // Ajout tâche Shampoing/Douche (Symbole Points)
+            let texteShampoing = "3. Shampoing / Douche : ";
+            texteShampoing += (chambre.type === 'distributeurs') ? "Remplir Distributeurs" : "Mettre Fioles";
+
+            // On insère cette tâche après le WC (index 5 dans la liste globale)
+            tachesDuJour.splice(5, 0, { texte: texteShampoing, forme: "shape-points" });
+
+            // Spécifique Cuisine (Atelier)
+            if (chambre.type === 'cuisine') {
+                tachesDuJour.push({ texte: "8. Cuisine : Changer Torchon + Éponge", icone: "🍳" });
+            }
+
+            // 2. Affichage
+            tachesDuJour.forEach(tache => {
+                let item = document.createElement('div');
+                item.className = 'tache-item';
+
+                // Gestion de l'affichage (Forme géométrique ou Icône)
+                let visuel = '';
+                if (tache.forme) {
+                    // Si c'est les points, on ajoute le texte "...", sinon vide
+                    let contenu = (tache.forme === 'shape-points') ? '...' : '';
+                    visuel = `<div class="shape ${tache.forme}">${contenu}</div>`;
+                } else if (tache.icone) {
+                    visuel = `<span style="margin-right:15px;">${tache.icone}</span>`;
+                }
+
+                // Pas de checkbox ici, on simplifie l'usage
+                item.innerHTML = `<input type="checkbox" class="tache-checkbox"> ${visuel} ${tache.texte}`;
+                liste.appendChild(item);
+            });
+        }
+
+        function checklistTerminee(nomChambre) {
+            localStorage.setItem('etat_' + nomChambre, "NETTOYE");
+            localStorage.setItem('auteur_' + nomChambre, currentUser.nom); // On signe la validation
+        }
+
+        function retourListe() {
+            document.getElementById('vue-taches').style.display = 'none';
+            checklistTerminee(document.getElementById('titre-chambre').innerText.replace("Chambre ", ""));
+            document.getElementById('vue-menu-chambres').style.display = 'flex';
+            initTableauBord();
+        }
+
+        function ouvrirAdminPanel() {
+            cacherToutesVues();
+            document.getElementById('vue-admin-menu').style.display = 'flex';
+        }
+
+        function ouvrirAdminEquipe() {
+            cacherToutesVues();
+            document.getElementById('vue-admin-equipe').style.display = 'flex';
+            genererPlanningAdmin();
+        }
+
+        function ouvrirAdminRH() {
+            cacherToutesVues();
+            document.getElementById('vue-admin-rh').style.display = 'flex';
+            chargerConges();
+        }
+
+        function ouvrirAdminHistorique() {
+            cacherToutesVues();
+            document.getElementById('vue-admin-historique').style.display = 'flex';
+            afficherHistoriqueMenage();
+        }
+
+        function cacherToutesVues() {
+            document.querySelectorAll('div[id^="vue-"]').forEach(div => {
+                if (div.id !== 'vue-login') div.style.display = 'none';
+            });
+            document.getElementById('menu-principal').style.display = 'none';
+        }
+
+        async function ajouterConge() {
+            if (!client) { alert("Fonction indisponible hors ligne (Supabase non connecté)"); return; }
+            let debut = document.getElementById('date-debut').value;
+            let fin = document.getElementById('date-fin').value;
+            if (debut && fin) {
+                const { error } = await client
+                    .from('conges')
+                    .insert([{ date_debut: debut, date_fin: fin }]);
+
+                if (error) alert("Erreur : " + error.message);
+                else {
+                    alert("Congés enregistrés !");
+                    chargerConges();
+                }
+            }
+        }
+
+        async function chargerConges() {
+            if (!client) return;
+            const { data, error } = await client
+                .from('conges')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (!error) {
+                const ul = document.getElementById('liste-conges');
+                ul.innerHTML = data.map(c => `<li>${c.date_debut} au ${c.date_fin}</li>`).join('');
+            }
+        }
+
+        async function chargerStocks() {
+            // Charge depuis Supabase ou LocalStorage
+            let stock180 = 10; // Défaut
+            let stock90 = 5;   // Défaut
+
+            if (client) {
+                const { data } = await client.from('stocks').select('*');
+                if (data) {
+                    data.forEach(item => {
+                        if (item.type === '180') stock180 = item.quantite;
+                        if (item.type === '90') stock90 = item.quantite;
+                    });
+                }
+            } else {
+                // Fallback LocalStorage si hors ligne
+                stock180 = parseInt(localStorage.getItem('stock_180') || "10");
+                stock90 = parseInt(localStorage.getItem('stock_90') || "5");
+            }
+
+            // Update UI
+            document.getElementById('stitch-stock-180').innerText = stock180;
+            document.getElementById('stitch-stock-90').innerText = stock90;
+
+            afficherHistoriqueStocks();
+        }
+
+        async function updateStock(type, delta) {
+            let id = `stitch-stock-${type}`;
+            let el = document.getElementById(id);
+            let current = parseInt(el.innerText);
+            let nouveau = current + delta;
+            if (nouveau < 0) nouveau = 0;
+
+            // Optimistic UI Update
+            el.innerText = nouveau;
+
+            // Save to LocalStorage (Immediate backup)
+            localStorage.setItem('stock_' + type, nouveau);
+
+            // Add to History
+            ajouterLogStock(type, delta, current, nouveau);
+
+            // Save to Supabase (Debounced or immediate)
+            if (client) {
+                const { error } = await client.from('stocks').upsert([
+                    { type: type, quantite: nouveau }
+                ]);
+                if (error) console.error("Erreur save stock", error);
+            }
+        }
+
+        function ajouterLogStock(type, delta, ancien, nouveau) {
+            let logs = JSON.parse(localStorage.getItem('historique_stocks') || "[]");
+            let date = new Date().toLocaleString('fr-FR', { hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'numeric' });
+            let action = delta > 0 ? "Ajout" : "Retrait";
+            let icon = delta > 0 ? "📥" : "📤";
+            let label = type === '180' ? "Kit 180" : "Kit 90";
+
+            logs.unshift({ date, icon, action, label, ancien, nouveau, user: currentUser ? currentUser.nom : '?' });
+
+            // Garder les 20 derniers
+            if (logs.length > 20) logs = logs.slice(0, 20);
+
+            localStorage.setItem('historique_stocks', JSON.stringify(logs));
+            afficherHistoriqueStocks();
+        }
+
+        function afficherHistoriqueStocks() {
+            const container = document.getElementById('stitch-logs');
+            let logs = JSON.parse(localStorage.getItem('historique_stocks') || "[]");
+
+            if (logs.length === 0) {
+                container.innerHTML = '<div class="stitch-log-item"><span>Aucun mouvement récent</span><span>-</span></div>';
+                return;
+            }
+
+            container.innerHTML = logs.map(log => `
+                <div class="stitch-log-item">
+                    <span>${log.icon} <strong>${log.action}</strong> ${log.label} (${log.user})</span>
+                    <span style="opacity:0.7;">${log.nouveau} ( ${log.date} )</span>
+                </div>
+            `).join('');
+        }
+
+        // Mock function needed if not present, but usually upsert handles it.
+        // Old 'sauvegarderStocks' is deprecated by 'updateStock' direct call.
+
+        // --- NOUVELLE FONCTIONNALITÉ : TABLEAU DE BORD ---
+
+        function initTableauBord() {
+            const tbody = document.getElementById('corps-tableau');
+            tbody.innerHTML = '';
+
+            CONFIG_CHAMBRES.forEach(chambre => {
+                let dispo = localStorage.getItem('dispo_' + chambre.nom) || "LIBRE";
+                let etat = localStorage.getItem('etat_' + chambre.nom) || "PROPRE";
+                let auteur = localStorage.getItem('auteur_' + chambre.nom) || "";
+
+                // Gestion Disponibilité (Libre/Occupée)
+                let dispoHtml = "";
+                if (currentUser && currentUser.role === 'admin') {
+                    let bg = dispo === "LIBRE" ? "var(--success)" : "var(--danger)";
+                    let col = dispo === "LIBRE" ? "var(--success-text)" : "var(--danger-text)";
+                    dispoHtml = `<button style="background:${bg}; color:${col}; border:none; padding:8px; border-radius:var(--radius-sm); width:100%; cursor:pointer; font-weight:600;" onclick="changerDispo('${chambre.nom}')">${dispo}</button>`;
+                } else {
+                    let col = dispo === 'LIBRE' ? 'var(--success-text)' : 'var(--danger-text)';
+                    dispoHtml = `<span style="color:${col}; font-weight:bold;">${dispo}</span>`;
+                }
+
+                // Calcul Visuel Badge + Interaction
+                let badgeClass = "badge-ras";
+                let badgeText = "RAS";
+                let badgeAction = "";
+
+                if (etat === "A_FAIRE_CLEAN") {
+                    badgeClass = "badge-clean";
+                    badgeText = "CLEAN";
+                } else if (etat === "A_FAIRE_CHECK") {
+                    badgeClass = "badge-check";
+                    badgeText = "CHECK";
+                } else if (etat === "NETTOYE") {
+                    badgeClass = "badge-done";
+                    badgeText = "FAIT";
+                }
+
+                // Définition de l'action au clic
+                if (currentUser && currentUser.role === 'admin') {
+                    // Admin : Change l'état en boucle
+                    badgeAction = `changerEtat('${chambre.nom}')`;
+                } else {
+                    // Extras / Staff
+                    if (etat === "A_FAIRE_CLEAN" || etat === "A_FAIRE_CHECK") {
+                        // Ouvre la checklist avec le NOM seulement pour éviter les erreurs d'objet/quotes
+                        // On échappe les quotes simples dans le nom si besoin (ex: L'Oasis)
+                        let safeNom = chambre.nom.replace(/'/g, "\\'");
+                        badgeAction = `ouvrirChecklist('${safeNom}')`;
+                    } else if (etat === "PROPRE") {
+                        // Validation spontanée pour RAS
+                        badgeAction = `changerEtat('${chambre.nom}')`;
+                    } else if (etat === "NETTOYE") {
+                        // Pas d'action ou alert
+                        badgeAction = "alert('Déjà fait !')";
+                    }
+                }
+
+                let visuel = `<span class="status-badge ${badgeClass}" onclick="${badgeAction}">${badgeText}</span>`;
+                if (etat === "NETTOYE") {
+                    visuel += `<span style="font-size:0.8rem; display:block; color:var(--success-text); margin-top:5px;">${auteur}</span>`;
+                }
+
+                // Action Button Logic (Simplified)
+                let btnHtml = '';
+                if (currentUser && currentUser.role === 'admin') {
+                    // Admin peut toujours avoir besoin du bouton explicite "Changer"
+                    btnHtml = `<button class="btn-primary" style="background:#eee; color:#333; height:auto; width:auto; font-size:0.9rem;" onclick="changerEtat('${chambre.nom}')">Changer</button>`;
+                } else {
+                    // Pour les extras, le badge fait tout. On met un petit indicateur visuel ou rien.
+                    btnHtml = `<span style="color:#ccc; font-size:0.8rem;">-</span>`;
+                }
+
+                let tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="font-weight:bold;">${chambre.nom}</td>
+                    <td>${dispoHtml}</td>
+                    <td style="font-size: 1rem;">${visuel}</td>
+                    <td>${btnHtml}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // Tableau Communs
+            const tbodyCommuns = document.getElementById('corps-tableau-communs');
+            tbodyCommuns.innerHTML = '';
+
+            CONFIG_COMMUNS.forEach(zone => {
+                let etat = localStorage.getItem('etat_' + zone) || "PROPRE";
+                let auteur = localStorage.getItem('auteur_' + zone) || "";
+
+                // Calcul Visuel Badge + Interaction
+                let badgeClass = "badge-ras";
+                let badgeText = "RAS";
+                let badgeAction = `changerEtat('${zone}')`; // Toujours cliquable
+
+                if (etat === "A_FAIRE") {
+                    badgeClass = "badge-clean"; // Rouge
+                    badgeText = "À FAIRE";
+                } else if (etat === "NETTOYE") {
+                    badgeClass = "badge-done"; // Vert
+                    badgeText = "FAIT";
+                }
+
+                let visuel = `<span class="status-badge ${badgeClass}" onclick="${badgeAction}">${badgeText}</span>`;
+                if (etat === "NETTOYE") {
+                    visuel += `<span style="font-size:0.8rem; display:block; color:var(--success-text); margin-top:5px;">${auteur}</span>`;
+                }
+
+                let tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="font-weight:bold;">${zone}</td>
+                    <td style="font-size: 1rem;">${visuel}</td>
+                `;
+                tbodyCommuns.appendChild(tr);
+            });
+        }
+
+        function changerDispo(nomChambre) {
+            let actuel = localStorage.getItem('dispo_' + nomChambre) || "LIBRE";
+            let nouveau = actuel === "LIBRE" ? "OCCUPÉE" : "LIBRE";
+            localStorage.setItem('dispo_' + nomChambre, nouveau);
+            initTableauBord();
+        }
+
+        function changerEtat(nomChambre) {
+            let actuel = localStorage.getItem('etat_' + nomChambre) || "PROPRE";
+            let nouveau = "PROPRE";
+
+            // Vérifie si c'est une chambre ou une partie commune
+            let isChambre = CONFIG_CHAMBRES.some(c => c.nom === nomChambre);
+
+            if (currentUser && currentUser.role === 'admin') {
+                if (isChambre) {
+                    // Cycle Admin Chambres : PROPRE -> CLEAN (Départ) -> CHECK (Recouche) -> PROPRE
+                    if (actuel === "PROPRE") nouveau = "A_FAIRE_CLEAN";
+                    else if (actuel === "A_FAIRE_CLEAN") nouveau = "A_FAIRE_CHECK";
+                    else if (actuel === "A_FAIRE_CHECK") nouveau = "PROPRE";
+                    else nouveau = "PROPRE"; // Reset si NETTOYE
+                } else {
+                    // Cycle Admin Communs : PROPRE -> A FAIRE -> PROPRE
+                    if (actuel === "PROPRE") nouveau = "A_FAIRE";
+                    else nouveau = "PROPRE";
+                }
+            } else {
+                // Employés
+                if (!isChambre) {
+                    // Communs
+                    if (actuel === "A_FAIRE") {
+                        nouveau = "NETTOYE";
+                    } else if (actuel === "PROPRE") {
+                        // Validation spontanée Communs
+                        if (confirm("Valider le nettoyage de : " + nomChambre + " ?")) {
+                            nouveau = "NETTOYE";
+                        } else return;
+                    } else return;
+                } else if (isChambre && actuel === "PROPRE") {
+                    // Validation spontanée Chambres
+                    if (confirm("Confirmer avoir fait le ménage dans " + nomChambre + " ?")) {
+                        nouveau = "NETTOYE";
+                    } else {
+                        return; // Annulé
+                    }
+                } else {
+                    return; // Ne fait rien sur les chambres ici (passe par checklist pour CLEAN/CHECK)
+                }
+            }
+
+            localStorage.setItem('etat_' + nomChambre, nouveau);
+
+            // Signature
+            if (nouveau === "NETTOYE") localStorage.setItem('auteur_' + nomChambre, currentUser.nom);
+            else if (nouveau !== "NETTOYE") localStorage.removeItem('auteur_' + nomChambre);
+
+            initTableauBord(); // On rafraichit l'affichage
+        }
+
+        function nouvelleJournee() {
+            if (confirm("Voulez-vous vraiment tout remettre à zéro pour une nouvelle journée ?")) {
+                sauvegarderHistoriqueJournee();
+                CONFIG_CHAMBRES.forEach(c => localStorage.setItem('etat_' + c.nom, "PROPRE"));
+                CONFIG_COMMUNS.forEach(z => localStorage.setItem('etat_' + z, "PROPRE"));
+                initTableauBord();
+            }
+        }
+
+        function sauvegarderHistoriqueJournee() {
+            let date = new Date().toLocaleString('fr-FR'); // Date et Heure
+            let rapport = {
+                date: date,
+                details: []
+            };
+
+            // On enregistre l'état des chambres avant la remise à zéro
+            CONFIG_CHAMBRES.forEach(c => {
+                let etat = localStorage.getItem('etat_' + c.nom) || "PROPRE";
+                let auteur = localStorage.getItem('auteur_' + c.nom) || "";
+                let lisible = "RAS";
+
+                if (etat === "A_FAIRE_CLEAN") lisible = "⚠️ OUBLI (CLEAN)";
+                else if (etat === "A_FAIRE_CHECK") lisible = "⚠️ OUBLI (CHECK)";
+                else if (etat === "NETTOYE") lisible = "✅ FAIT";
+
+                if (auteur) lisible += ` (${auteur})`;
+
+                // On n'enregistre que si ce n'est pas "RAS" (Propre par défaut sans action)
+                // Ou alors on enregistre tout ? L'utilisateur veut voir "si rien a été oublié".
+                // Donc on enregistre tout ou au moins les faits et les oublis.
+                if (lisible !== "RAS") {
+                    rapport.details.push(`${c.nom}: ${lisible}`);
+                }
+            });
+
+            // On enregistre les Communs
+            CONFIG_COMMUNS.forEach(z => {
+                let etat = localStorage.getItem('etat_' + z) || "PROPRE";
+                let auteur = localStorage.getItem('auteur_' + z) || "";
+
+                if (etat === "A_FAIRE") {
+                    rapport.details.push(`${z}: ⚠️ OUBLI (À FAIRE)`);
+                } else if (etat === "NETTOYE") {
+                    let lig = `✅ FAIT`;
+                    if (auteur) lig += ` (${auteur})`;
+                    rapport.details.push(`${z}: ${lig}`);
+                }
+            });
+
+            // On sauvegarde dans la mémoire du téléphone
+            let historique = JSON.parse(localStorage.getItem('historique_menage') || "[]");
+            historique.unshift(rapport); // Ajoute le plus récent en haut
+
+            // Limite à 15 jours
+            if (historique.length > 15) {
+                historique = historique.slice(0, 15);
+            }
+
+            localStorage.setItem('historique_menage', JSON.stringify(historique));
+        }
+
+        function afficherHistoriqueMenage() {
+            const container = document.getElementById('liste-historique-menage');
+            let historique = JSON.parse(localStorage.getItem('historique_menage') || "[]");
+
+            if (historique.length === 0) {
+                container.innerHTML = "<p>Aucun historique pour le moment.</p>";
+            } else {
+                let html = "";
+
+                // Bouton Copier le dernier rapport (le plus récent est à l'index 0)
+                if (historique.length > 0) {
+                    html += `<button class="btn-primary" style="background:#25D366; margin-bottom:15px;" onclick="copierDernierRapport()">📋 COPIER POUR WHATSAPP</button>`;
+                }
+
+                html += historique.map(h => `<div style="margin-bottom:10px; border-bottom:1px solid #ccc; padding-bottom:5px;"><strong>📅 ${h.date}</strong><br><small>${h.details.join('<br>')}</small></div>`).join('');
+                container.innerHTML = html;
+            }
+        }
+
+        async function copierDernierRapport() {
+            let historique = JSON.parse(localStorage.getItem('historique_menage') || "[]");
+            if (historique.length === 0) return;
+
+            let h = historique[0];
+            let texte = `📅 *RAPPORT MÉNAGE DU ${h.date}*\n\n`;
+
+            // On trie pour mettre les Oublis en premier pour qu'ils soient vus
+            let details = h.details;
+            let oublis = details.filter(d => d.includes('OUBLI') || d.includes('A FAIRE'));
+            let faits = details.filter(d => !d.includes('OUBLI') && !d.includes('A FAIRE'));
+
+            if (oublis.length > 0) {
+                texte += `🚨 *ATTENTION / OUBLIS :*\n`;
+                oublis.forEach(d => texte += `${d}\n`);
+                texte += `\n`;
+            }
+
+            if (faits.length > 0) {
+                texte += `✅ *FAIT :*\n`;
+                faits.forEach(d => texte += `${d}\n`);
+            } else if (oublis.length === 0) {
+                texte += `(Rien à signaler ou journée vide)\n`;
+            }
+
+            try {
+                await navigator.clipboard.writeText(texte);
+                alert("Rapport copié ! Vous n'avez plus qu'à coller dans WhatsApp.");
+            } catch (err) {
+                alert("Erreur copie : " + err);
+            }
+        }
+
+        // --- GESTION CONNEXION ---
+        function getEquipe() {
+            try {
+                let stored = localStorage.getItem('config_equipe');
+                if (!stored) return DEFAULT_EQUIPE;
+
+                let parsed = JSON.parse(stored);
+                // Sécurité : Si la liste est vide ou invalide, on remet par défaut
+                if (!Array.isArray(parsed) || parsed.length === 0) {
+                    return DEFAULT_EQUIPE;
+                }
+                return parsed;
+            } catch (e) {
+                console.error("Erreur lecture équipe, reset par défaut", e);
+                return DEFAULT_EQUIPE;
+            }
+        }
+
+        function initLogin() {
+            try {
+                const container = document.getElementById('liste-users');
+
+                // Défensif : Supprimer tout H1 résiduel si le cache persiste
+                const oldTitle = document.querySelector('#vue-login h1');
+                if (oldTitle) oldTitle.style.display = 'none';
+
+                container.innerHTML = '';
+                let equipe = getEquipe();
+                equipe.forEach(user => {
+                    if (user.present && user.nom) {
+                        let btn = document.createElement('button');
+                        btn.className = 'user-card';
+
+                        let info = user.matin || "";
+                        if (user.apres_midi) info += (info ? " / " : "") + user.apres_midi;
+
+                        btn.innerHTML = `${user.nom}<br><span style="font-size:0.75rem; font-weight:normal;">${info}</span>`;
+                        btn.onclick = () => connecter(user);
+                        container.appendChild(btn);
+                    }
+                });
+
+                // MAGIC LINK CHECK
+                const urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.has('u')) {
+                    let targetCode = urlParams.get('u'); // On attend le code ou le nom
+                    let targetUser = equipe.find(u => u.code === targetCode || u.nom === targetCode);
+
+                    if (targetUser) {
+                        // Nettoyage URL pour ne pas boucler ou gêner
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                        connecter(targetUser, true); // Bypass code
+                    }
+                }
+
+            } catch (e) {
+                alert("Erreur démarrage: " + e.message);
+                console.error(e);
+            }
+        }
+
+        function connecter(user, bypassCode = false) {
+            // Vérification de la période de stage (si dates définies)
+            if (user.debut && user.fin) {
+                const today = new Date().toISOString().split('T')[0];
+                if (today < user.debut || today > user.fin) {
+                    alert(`Accès refusé.\nVotre période de présence est du ${user.debut} au ${user.fin}.`);
+                    return;
+                }
+            }
+
+            // Vérification Congés
+            if (user.conge_debut && user.conge_fin) {
+                const today = new Date().toISOString().split('T')[0];
+                if (today >= user.conge_debut && today <= user.conge_fin) {
+                    alert(`Accès refusé.\nVous êtes enregistré comme absent (Congés) jusqu'au ${user.conge_fin}.`);
+                    return;
+                }
+            }
+
+            if (!bypassCode) {
+                let code = prompt(`Bonjour ${user.nom}, entrez votre code :`);
+                if (code !== user.code) return;
+            } else {
+                // Message d'accueil personnalisé Bot
+                setTimeout(() => {
+                    alert(`🤖 Bip Boop !\nAuthentification validée.\n\nBienvenue ${user.nom} !\nLe bot a préparé ton planning.`);
+                }, 500);
+            }
+
+            currentUser = user;
+            document.getElementById('vue-login').style.display = 'none';
+            document.getElementById('menu-principal').style.display = 'flex';
+            document.getElementById('titre-bonjour').innerText = "Bonjour " + user.nom;
+
+            // Gestion bouton Admin & Planning
+            if (user.role === 'admin' || user.code === '1234') {
+                // Force le rôle admin si code 1234 (Sécurité)
+                currentUser.role = 'admin';
+                document.getElementById('btn-menu-admin').style.display = 'block';
+                document.getElementById('btn-menu-planning').style.display = 'block'; // Planning visible
+                document.getElementById('btn-reset-day').style.display = 'block';
+            } else {
+                document.getElementById('btn-menu-admin').style.display = 'none';
+                document.getElementById('btn-menu-planning').style.display = 'none'; // Planning caché
+                document.getElementById('btn-reset-day').style.display = 'none';
+            }
+        }
+
+        function deconnecter() {
+            currentUser = null;
+            document.getElementById('menu-principal').style.display = 'none';
+            document.getElementById('vue-login').style.display = 'flex';
+        }
+
+        // --- GESTION MODAL MEMBRE ---
+        let currentMembreIndex = -1;
+        const JOURS_SEMAINE = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
+
+        function initModalSelects() {
+            // Remplissage des Selects Horaires (00h à 23h)
+            const fills = (id) => {
+                let el = document.getElementById(id);
+                el.innerHTML = '<option value="">-</option>';
+                for (let i = 0; i < 24; i++) {
+                    let val = i < 10 ? "0" + i : "" + i;
+                    el.innerHTML += `<option value="${val}h">${val}h</option>`;
+                }
+            };
+            fills('m-matin-debut'); fills('m-matin-fin');
+            fills('m-apres-debut'); fills('m-apres-fin');
+
+            // Remplissage Jours Repos
+            let container = document.getElementById('m-repos-container');
+            container.innerHTML = '';
+            JOURS_SEMAINE.forEach((j, idx) => {
+                container.innerHTML += `
+                    <div class="day-check">
+                        <input type="checkbox" id="repos-${idx}" value="${j}">
+                        <label for="repos-${idx}">${j}</label>
+                    </div>`;
+            });
+        }
+
+        function ouvrirModalMembre(index) {
+            initModalSelects(); // Ensure filled
+            currentMembreIndex = index;
+            let equipe = getEquipe();
+            let u = equipe[index];
+
+            document.getElementById('modal-membre').style.display = 'flex';
+            document.getElementById('m-nom').value = u.nom;
+            document.getElementById('m-code').value = u.code;
+
+            // Parsing Horaires (Ex: "08h-12h")
+            const parseHeure = (str, idDeb, idFin) => {
+                if (!str || !str.includes('-')) {
+                    document.getElementById(idDeb).value = "";
+                    document.getElementById(idFin).value = "";
+                    return;
+                }
+                let parts = str.split('-');
+                document.getElementById(idDeb).value = parts[0];
+                document.getElementById(idFin).value = parts[1];
+            };
+            parseHeure(u.matin, 'm-matin-debut', 'm-matin-fin');
+            parseHeure(u.apres_midi, 'm-apres-debut', 'm-apres-fin');
+
+            // Stages & Congés
+            document.getElementById('m-debut').value = u.debut || "";
+            document.getElementById('m-fin').value = u.fin || "";
+            document.getElementById('m-conge-debut').value = u.conge_debut || "";
+            document.getElementById('m-conge-fin').value = u.conge_fin || "";
+
+            // Repos
+            JOURS_SEMAINE.forEach((j, idx) => {
+                document.getElementById(`repos-${idx}`).checked = (u.repos && u.repos.includes(j));
+            });
+        }
+
+        function fermerModalMembre() {
+            document.getElementById('modal-membre').style.display = 'none';
+            currentMembreIndex = -1;
+        }
+
+        function sauvegarderMembreDepuisModal() {
+            if (currentMembreIndex === -1) return;
+
+            let equipe = getEquipe();
+            let u = equipe[currentMembreIndex];
+
+            // Récup Champs
+            u.nom = document.getElementById('m-nom').value;
+            u.code = document.getElementById('m-code').value;
+
+            // Reconstruct Horaires
+            const buildHeure = (idDeb, idFin) => {
+                let d = document.getElementById(idDeb).value;
+                let f = document.getElementById(idFin).value;
+                return (d && f) ? `${d}-${f}` : "";
+            };
+            u.matin = buildHeure('m-matin-debut', 'm-matin-fin');
+            u.apres_midi = buildHeure('m-apres-debut', 'm-apres-fin');
+
+            // Reconstruct Repos
+            let reposList = [];
+            JOURS_SEMAINE.forEach((j, idx) => {
+                if (document.getElementById(`repos-${idx}`).checked) reposList.push(j);
+            });
+            u.repos = reposList.join('-');
+
+            // Dates
+            u.debut = document.getElementById('m-debut').value;
+            u.fin = document.getElementById('m-fin').value;
+            u.conge_debut = document.getElementById('m-conge-debut').value;
+            u.conge_fin = document.getElementById('m-conge-fin').value;
+
+            // Sauvegarde
+            equipe[currentMembreIndex] = u;
+            localStorage.setItem('config_equipe', JSON.stringify(equipe));
+            fermerModalMembre();
+            genererPlanningAdmin(); // Refresh tableau
+        }
+
+        // --- GESTION PLANNING (ADMIN TABLEAU SIMPLIFIÉ) ---
+        function genererPlanningAdmin() {
+            const container = document.getElementById('planning-container');
+            let equipe = getEquipe();
+
+            let html = '<table style="font-size:0.9rem;"><thead><tr><th>Présent</th><th>Nom</th><th>Horaires</th><th>Repos</th><th>Absences</th><th>Actions</th></tr></thead><tbody id="planning-body">';
+
+            equipe.forEach((user, index) => {
+                let checked = user.present ? 'checked' : '';
+
+                // Résumé Horaires
+                let horaires = user.matin || "";
+                if (user.apres_midi) horaires += (horaires ? " / " : "") + user.apres_midi;
+                if (!horaires) horaires = "<span style='color:#ccc'>-</span>";
+
+                // Résumé Repos
+                let repos = user.repos || "<span style='color:#ccc'>-</span>";
+
+                // Résumé Absences / Stage
+                let statusInfo = "";
+                if (user.conge_debut && user.conge_fin) {
+                    // Check if current date is in range for visual hint
+                    let now = new Date().toISOString().split('T')[0];
+                    let isAway = (now >= user.conge_debut && now <= user.conge_fin);
+                    let color = isAway ? "red" : "#888";
+                    statusInfo += `<div style="font-size:0.8rem; color:${color};">🏖️ ${user.conge_debut.slice(5)} au ${user.conge_fin.slice(5)}</div>`;
+                }
+                if (user.debut && user.fin) {
+                    statusInfo += `<div style="font-size:0.8rem; color:blue;">🎓 Stage: ${user.debut.slice(5)} / ${user.fin.slice(5)}</div>`;
+                }
+
+                html += `<tr>
+                    <td><input type="checkbox" class="p-present" onchange="togglePresence(${index}, this.checked)" ${checked}></td>
+                    <td><b>${user.nom}</b><br><small style="color:#aaa">${user.code}</small></td>
+                    <td>${horaires}</td>
+                    <td>${repos}</td>
+                    <td>${statusInfo}</td>
+                    <td>
+                        <button onclick="ouvrirModalMembre(${index})" style="background:#3498db; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer; margin-right:5px;">✏️</button>
+                        ${user.role !== 'admin' ? `<button onclick="supprimerMembre(${index})" style="background:var(--danger); color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer;">X</button>` : ''}
+                    </td>
+                </tr>`;
+            });
+            html += '</tbody></table>';
+            html += '<button class="btn-primary" onclick="ajouterMembre()" style="margin-top:10px; background:var(--success); color:var(--success-text); width:100%;">+ Ajouter une personne</button>';
+            container.innerHTML = html;
+        }
+
+        function togglePresence(index, isChecked) {
+            let equipe = getEquipe();
+            equipe[index].present = isChecked;
+            localStorage.setItem('config_equipe', JSON.stringify(equipe));
+            // Pas besoin de régénérer tout le tableau juste pour ça, mais pour être sûr de la synchro :
+            // genererPlanningAdmin(); 
+        }
+
+        function ajouterMembre() {
+            let equipe = getEquipe();
+            equipe.push({ nom: "Nouveau", code: "", role: "extra", present: false, matin: "", apres_midi: "", repos: "", debut: "", fin: "", conge_debut: "", conge_fin: "" });
+            localStorage.setItem('config_equipe', JSON.stringify(equipe));
+            genererPlanningAdmin();
+            ouvrirModalMembre(equipe.length - 1); // Ouvre directement le nouveau
+        }
+
+        function supprimerMembre(index) {
+            if (confirm("Supprimer cette personne ?")) {
+                let equipe = getEquipe();
+                equipe.splice(index, 1);
+                localStorage.setItem('config_equipe', JSON.stringify(equipe));
+                genererPlanningAdmin();
+            }
+        }
+
+        // Ancienne fonction sauvegarderPlanning devenue inutile car sauvegarde en temps réel via Modal
+        function sauvegarderPlanning(afficherMessage = true) {
+            // Deprecated but kept to avoid breaking if called elsewhere.
+            // Now empty or just alert.
+            if (afficherMessage) alert("Utilisez le bouton ✏️ pour modifier les détails.");
+        }
+
+        // --- GLOBAL ERROR HANDLER ---
+        window.onerror = function (msg, url, lineNo, columnNo, error) {
+            alert("Erreur Globale : " + msg + "\nLigne : " + lineNo);
+            return false;
+        };
+
+        // --- STYLES FOR MOBILE BADGES ---
+        const styleBadges = document.createElement('style');
+        styleBadges.innerHTML = `
+            .status-badge {
+                display: inline-block;
+                padding: 10px 15px; /* Plus large pour le tactile */
+                border-radius: 20px;
+                color: white;
+                font-weight: bold;
+                text-transform: uppercase;
+                font-size: 0.9rem;
+                width: 100%;
+                text-align: center;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+                cursor: pointer; /* Indique que c'est cliquable */
+                transition: transform 0.1s, opacity 0.2s;
+                user-select: none;
+            }
+            .status-badge:active { transform: scale(0.95); }
+            .status-badge:hover { opacity: 0.9; }
+            
+            .badge-clean { background-color: #e74c3c; } /* Rouge */
+            .badge-check { background-color: #f39c12; } /* Orange */
+            .badge-done { background-color: #2ecc71; }  /* Vert */
+            .badge-ras { background-color: #3498db; }   /* Bleu */
+        `;
+        document.head.appendChild(styleBadges);
+
+
+
+        // --- LOGIQUE DU BOT INTELLIGENT ---
+        function genererPlanningBot() {
+            try {
+                cacherToutesVues(); // On cache tout
+                document.getElementById('vue-bot-result').style.display = 'flex';
+
+                let rapport = "";
+                let jourActuel = new Date().getDay();
+                let tacheDuJour = CONFIG_BOT.taches_hebdo[jourActuel] || { nom: "Tâche par défaut", expert: 15, extra: 15 };
+
+                // 1. Analyse des Chambres à faire
+                let chambresClean = [];
+                let chambresCheck = [];
+                CONFIG_CHAMBRES.forEach(c => {
+                    let etat = localStorage.getItem('etat_' + c.nom);
+                    if (etat === 'A_FAIRE_CLEAN') chambresClean.push(c.nom);
+                    if (etat === 'A_FAIRE_CHECK') chambresCheck.push(c.nom);
+                });
+
+                let totalChambres = chambresClean.length + chambresCheck.length;
+                let estJourneeChargee = totalChambres > 4;
+
+                // 2. Analyse des Communs (Choix Admin)
+                let communsAFaire = [];
+                CONFIG_COMMUNS.forEach(z => {
+                    let etat = localStorage.getItem('etat_' + z);
+                    if (etat === 'A_FAIRE') {
+                        communsAFaire.push({ nom: z + " (A FAIRE)", type: 'communs', priorite: 2 });
+                    }
+                });
+
+                rapport += `<h2>🤖 Rapport du Bot</h2>`;
+                rapport += `<div class="admin-section">`;
+                rapport += `<strong>📊 Analyse Charge :</strong> ${totalChambres} Chambres à faire.<br>`;
+                if (communsAFaire.length > 0) {
+                    rapport += `<strong>🧹 Communs forcés :</strong> ${communsAFaire.length} zones à traiter.<br>`;
+                }
+
+                if (estJourneeChargee) {
+                    rapport += `<span style="color:var(--danger-text); font-weight:bold;">🔥 JOURNÉE CHARGÉE (>4)</span> : Communs réduits au minimum.<br>`;
+                } else {
+                    rapport += `<span style="color:var(--success-text); font-weight:bold;">✅ JOURNÉE CALME</span> : On fait les tâches de fond.<br>`;
+                }
+                rapport += `</div>`;
+
+                // 3. Analyse de l'Équipe
+                let equipe = getEquipe().filter(u => u.present);
+                let staffDetails = [];
+
+                // --- NOUVEAU : Estimation Linge ---
+                let lingeTotal = { kit180: 0, kit90: 0 };
+                chambresClean.forEach(nom => {
+                    let chambre = CONFIG_CHAMBRES.find(c => c.nom === nom);
+                    if (chambre && chambre.lits) {
+                        if (chambre.lits.includes("180")) lingeTotal.kit180 += 1;
+                        if (chambre.lits.includes("90")) lingeTotal.kit90 += 1;
+                    }
+                });
+
+                rapport += `<div class="admin-section" style="margin-top:10px; border-left:4px solid var(--primary);">`;
+                rapport += `<strong>🧺 Prévision Linge (Chambres à faire) :</strong><br>`;
+                rapport += `Needs: <strong>${lingeTotal.kit180}</strong> Kits 180 | <strong>${lingeTotal.kit90}</strong> Kits 90.<br>`;
+                rapport += `<small>(Basé sur les chambres en 'A FAIRE CLEAN')</small>`;
+                rapport += `</div>`;
+
+                // Notification Removed per user request
+
+                equipe.forEach(u => {
+                    let minutes = 0;
+
+                    // 1. Vérification Période de Stage (si dates définies)
+                    if (u.debut && u.fin) {
+                        let dNow = new Date();
+                        let dDebut = new Date(u.debut);
+                        let dFin = new Date(u.fin);
+                        dNow.setHours(12, 0, 0, 0); // Ignore l'heure
+                        if (dNow < dDebut || dNow > dFin) {
+                            // Hors période de stage -> Exclu
+                            // On ne l'affiche pas du tout ou on le note ?
+                            // Mieux vaut l'ignorer pour le bot
+                            return;
+                        }
+                    }
+
+                    // 1b. Vérification CONGÉS (si dates définies)
+                    if (u.conge_debut && u.conge_fin) {
+                        let dNow = new Date();
+                        let dCongeDeb = new Date(u.conge_debut);
+                        let dCongeFin = new Date(u.conge_fin);
+                        dNow.setHours(12, 0, 0, 0);
+
+                        // Si on est PENDANT les congés
+                        if (dNow >= dCongeDeb && dNow <= dCongeFin) {
+                            staffDetails.push({ ...u, minutesRestantes: 0, tachesAssignees: ["🏖️ EN CONGÉS"], motifAbsence: "Congés" });
+                            return; // On arrête là pour cette personne
+                        }
+                    }
+
+                    // 2. Calcul Précis des Minutes
+                    // Helper interne ou fonction externe ? Utilisons une logique simple ici pour éviter les erreurs de portée
+                    let getMinutes = (str) => {
+                        if (!str || !str.includes('-')) return 0;
+                        try {
+                            let parts = str.toLowerCase().replace('h', ':').split('-');
+                            if (parts.length !== 2) return 0;
+                            let h1 = parseInt(parts[0]);
+                            let h2 = parseInt(parts[1]);
+                            return (h2 - h1) * 60;
+                        } catch (e) { return 0; }
+                    };
+
+                    let minMatin = getMinutes(u.matin);
+                    let minApres = getMinutes(u.apres_midi);
+
+                    // Fallbacks
+                    if (minMatin === 0 && u.matin === "") minMatin = 240;
+                    if (minApres === 0 && u.apres_midi === "") minApres = 180;
+
+                    minutes = minMatin + minApres;
+
+                    if (u.nom.toLowerCase().includes('stagiaire')) minutes -= 30;
+                    if (u.role === 'admin') minutes -= 60;
+
+                    staffDetails.push({ ...u, minutesRestantes: minutes, tachesAssignees: [] });
+                });
+
+                // 3. Liste des Tâches Intelligente
+                let tachesAAssigner = [];
+
+                // A. Communs forcés (Priorité Max)
+                communsAFaire.forEach(c => tachesAAssigner.push(c));
+
+                // A. Chambres CLEAN (Priorité 1)
+                chambresClean.forEach(nom => tachesAAssigner.push({ nom: nom + " (CLEAN)", type: 'clean', priorite: 1 }));
+
+                // B. Chambres CHECK (Priorité 1b)
+                chambresCheck.forEach(nom => tachesAAssigner.push({ nom: nom + " (CHECK)", type: 'check', priorite: 1 }));
+
+                // C. Tâches Quotidiennes (Priorité 2)
+                CONFIG_BOT.taches_quotidiennes.forEach(t => tachesAAssigner.push({ nom: t.nom, type: 'quotidien', priorite: 2 }));
+
+                // D. Tâche du jour / Bonus
+                if (!estJourneeChargee) {
+                    if (tacheDuJour) tachesAAssigner.push({ nom: `Tâche Hebdo : ${tacheDuJour.nom}`, type: 'hebdo', priorite: 3 });
+                    tachesAAssigner.push({ nom: `Vérification Stocks & Linge`, type: 'bonus', priorite: 3 });
+                }
+
+                // 4. Distribution
+                tachesAAssigner.forEach(tache => {
+                    staffDetails.sort((a, b) => (a.role === 'admin') - (b.role === 'admin'));
+
+                    for (let u of staffDetails) {
+                        if (u.minutesRestantes <= 0) continue;
+
+                        let duree = 20;
+                        if (tache.type === 'clean') duree = (u.role === 'admin') ? 20 : 35;
+                        else if (tache.type === 'check') duree = 10;
+                        else if (tache.type === 'hebdo') duree = 30;
+                        else if (tache.type === 'bonus') duree = 15;
+                        else if (tache.type === 'communs') duree = 30;
+
+                        if (u.minutesRestantes >= duree) {
+                            u.minutesRestantes -= duree;
+
+                            // FORMATAGE AVEC COULEURS (Mots clés colorés uniquement)
+                            let taskLabel = tache.nom;
+                            if (tache.type === 'clean') {
+                                // CLEAN en Rouge Vif, reste en noir
+                                let nomChambre = tache.nom.replace('(CLEAN)', '').trim();
+                                taskLabel = `<span style="color:#ff0000; font-weight:900; font-size:1rem;">CLEAN</span> <span style="color:#000;">${nomChambre}</span>`;
+                            } else if (tache.type === 'check') {
+                                // CHECK en Orange Vif, reste en noir
+                                let nomChambre = tache.nom.replace('(CHECK)', '').trim();
+                                taskLabel = `<span style="color:#ff8800; font-weight:900; font-size:1rem;">CHECK</span> <span style="color:#000;">${nomChambre}</span>`;
+                            } else if (tache.type === 'communs') {
+                                // ZONE en Bleu, reste en noir
+                                let nomZone = tache.nom.replace('(A FAIRE)', '').trim();
+                                taskLabel = `<span style="color:#2196F3; font-weight:900;">ZONE</span> <span style="color:#000;">${nomZone}</span>`;
+                            }
+
+                            u.tachesAssignees.push(taskLabel);
+                            break;
+                        }
+                    }
+                });
+
+                // 5. Affichage Groupé par Superviseur
+                rapport += `<div class="admin-section">`;
+
+                let superviseurs = [...new Set(staffDetails.map(u => u.superviseur || "Autres"))];
+                // Tri pour mettre "Autres" à la fin si possible, ou simple tri alpha
+                superviseurs.sort((a, b) => a === "Autres" ? 1 : b === "Autres" ? -1 : a.localeCompare(b));
+
+                superviseurs.forEach(supName => {
+                    let nomGroupe = (supName === "Autres" || supName === "") ? "🚀 Équipe Générale" : `👑 Équipe de ${supName}`;
+                    let staffDuGroupe = staffDetails.filter(u => (u.superviseur || "Autres") === (supName || "Autres"));
+
+                    if (staffDuGroupe.length > 0) {
+                        rapport += `<h3 style="margin-top:20px; text-align:left; border-bottom:2px solid var(--primary); color:var(--primary-dark); padding-bottom:5px;">${nomGroupe}</h3>`;
+
+                        staffDuGroupe.forEach(u => {
+                            rapport += `<div style="margin-bottom:15px;">`;
+                            rapport += `<strong>👤 ${u.nom}</strong> : <br>`;
+                            if (u.motifAbsence) {
+                                rapport += `<i>Absence : ${u.motifAbsence}</i><br>`;
+                            } else if (u.tachesAssignees.length > 0) {
+                                rapport += `<ul style="margin:5px 0 5px 20px; list-style:none; padding-left:0;">
+                                    ${u.tachesAssignees.map(t => `<li style="margin-bottom:6px;">${t}</li>`).join('')}
+                                </ul>`;
+                            } else {
+                                rapport += `<i>Renfort / Pas de tâche assignée</i><br>`;
+                            }
+                            rapport += `</div>`;
+                        });
+                    }
+                });
+
+                rapport += `</div>`;
+                rapport += `<button class="btn-retour" onclick="ouvrirAdminPanel()">RETOUR ADMIN</button>`;
+
+                const botView = document.getElementById('vue-bot-result');
+                if (botView) {
+                    // Affichage final
+                    let rapportDiv = document.getElementById('rapport-bot');
+                    rapportDiv.innerHTML = "<h3>🤖 Planning Optimisé du Jour</h3>";
+
+                    // On groupe par SUPERVISOR
+                    let supervisors = {};
+                    staffDetails.forEach(u => {
+                        let sup = u.superviseur || "Non assigné"; // Changed u.supervisor to u.superviseur
+                        if (!supervisors[sup]) supervisors[sup] = [];
+                        supervisors[sup].push(u);
+                    });
+
+                    for (let sup in supervisors) {
+                        rapportDiv.innerHTML += `<div style="margin-top:20px; border-bottom:2px solid #ccc; padding-bottom:5px;"><strong>SUPERVISEUR : ${sup}</strong></div>`;
+
+                        supervisors[sup].forEach(u => {
+                            let listeHtml = u.tachesAssignees.length ? `<ul>${u.tachesAssignees.map(t => `<li>${t}</li>`).join('')}</ul>` : "<p>Repos / Pas de tâches</p>";
+                            // On remet la couleur noire par défaut pour le nom
+                            rapportDiv.innerHTML += `<div style="background:#fff; border:1px solid #ddd; padding:10px; margin:10px 0; border-radius:8px;">
+                                <strong style="color:#000; font-size:1.1rem;">👤 ${u.nom}</strong>
+                                ${listeHtml}
+                             </div>`;
+                        });
+                    }
+
+                    // Boutons Spécifiques
+                    let checkName = (n) => n.toLowerCase();
+                    let hasChoedon = staffDetails.some(u => checkName(u.nom).includes('choedon'));
+                    let hasStagiaires = staffDetails.some(u => checkName(u.nom).includes('stagiaire'));
+
+                    let buttonsHtml = '<div style="margin-top:20px; display:flex; flex-direction:column; gap:10px;">';
+
+                    if (hasChoedon) {
+                        buttonsHtml += `<button class="btn-primary" style="background:#9C27B0; font-size:1rem;" onclick="envoyerMessageChoedon()">🦄 MESSAGE CHOEDON</button>`;
+                    }
+                    if (hasStagiaires) {
+                        buttonsHtml += `<button class="btn-primary" style="background:#FF9800; font-size:1rem;" onclick="envoyerMessageStagiaires()">🎓 MESSAGE STAGIAIRES</button>`;
+                    }
+                    buttonsHtml += '</div>';
+
+                    // Message si personne
+                    if (!hasChoedon && !hasStagiaires) {
+                        rapportDiv.innerHTML += `<p style="text-align:center; color:#666; margin-top:10px;">Aucun bouton spécifique disponible (Pas de Choedon ni de Stagiaires détectés).</p>`;
+                    }
+
+                    rapportDiv.innerHTML += buttonsHtml;
+
+                    rapportDiv.style.display = 'block';
+
+                } else {
+                    alert("Erreur : Impossible de récupérer l'équipe.");
+                }
+            } catch (e) {
+                console.error(e);
+                alert("Erreur Bot : " + e.message);
+            }
+        }
+
+        const MESSAGES_CHOEDON = [
+            { lang: "FR", salut: "Coucou Choedon ! 👋", meteo: "Météo : Il pleut des paillettes aujourd'hui ✨", fin: "Courage championne ! 💪" },
+            { lang: "EN", salut: "Hello Choedon! 🌟", meteo: "Weather: The sun is shining just for you ☀️", fin: "You rock! 🚀" },
+            { lang: "BO", salut: "Tashi Delek Choedon! 🙏", meteo: "Nima shar gi 'dug (Le soleil brille) ☀️", fin: "Hulajug (Courage) ! 💪" },
+            { lang: "HI", salut: "Namaste Choedon! 🙏", meteo: "Aaj mausam mast hai (La météo est super) 🌈", fin: "Shubhkamnayein! 🌸" }
+        ];
+
+        async function getMagicLink(nom) {
+            // Pour être robuste, on préfère window.location.origin + pathname
+            // Si c'est en local (file://), le lien ne marchera pas pour les autres, mais on le génère quand même.
+            let baseUrl = window.location.href.split('?')[0];
+
+            // Si on est sur file://, on avertit (optionnel, mais bon à savoir pour le debug)
+            // if (baseUrl.startsWith('file:')) baseUrl = "https://votre-site-web.com"; // À configurer si hébergé
+
+            let equipe = getEquipe();
+            // Recherche insensible à la casse et aux espaces
+            let u = equipe.find(user => user.nom.trim().toLowerCase() === nom.trim().toLowerCase());
+
+            if (u) {
+                let identifiant = u.code || u.nom;
+                // Encodage strict pour éviter les erreurs dans l'URL
+                return `${baseUrl}?u=${encodeURIComponent(identifiant)}`;
+            }
+            return "";
+        }
+
+        function getTaskTextOnly(divBlock) {
+            let ulEl = divBlock.querySelector('ul');
+            let txt = "";
+            if (ulEl) {
+                let lis = ulEl.querySelectorAll('li');
+                lis.forEach(li => {
+                    let t = li.innerHTML;
+                    // Nettoyage agressif des entités HTML et des balises
+                    t = t.replace(/&nbsp;/g, ' '); // Remplace les espaces insécables par des espaces simples
+                    t = t.replace(/&amp;/g, '&');
+                    t = t.replace(/<span.*?>CLEAN<\/span>/g, "🔴 CLEAN");
+                    t = t.replace(/<span.*?>CHECK<\/span>/g, "🟠 CHECK");
+                    t = t.replace(/<span.*?>ZONE<\/span>/g, "🔵 ZONE");
+                    t = t.replace(/<[^>]+>/g, ''); // Supprime toutes les autres balises HTML
+                    t = t.trim(); // Supprime les espaces superflus début/fin
+                    if (t) txt += `- ${t}\n`;
+                });
+            } else {
+                txt += `(Repos ou Pas de tâches)\n`;
+            }
+            return txt;
+        }
+
+        function envoyerMessageChoedon() {
+            let rapportDiv = document.getElementById('rapport-bot');
+            let blocks = Array.from(rapportDiv.querySelectorAll('div'));
+            let userBlock = blocks.find(b => b.innerText.toLowerCase().includes('choedon') && b.style.background);
+
+            if (!userBlock) return alert("Choedon introuvable dans le rapport !");
+
+            let msg = MESSAGES_CHOEDON[Math.floor(Math.random() * MESSAGES_CHOEDON.length)];
+            let texte = `${msg.salut}\n${msg.meteo}\n\n📝 *Tes missions :*\n`;
+
+            texte += getTaskTextOnly(userBlock);
+            texte += `\n${msg.fin}\n`;
+
+            // Récupérer le lien
+            // On doit appeler getMagicLink de manière synchrone ici ou juste utiliser le nom
+            // Le helper getMagicLink est async ? Non pas besoin d'être async ici car getEquipe est synchrone (localstorage).
+            // Correction : getMagicLink ne devrait pas être async si getEquipe ne l'est pas.
+            // On va le laisser synchrone dans la def.
+
+            let equipe = getEquipe();
+            let u = equipe.find(user => user.nom.toLowerCase().includes('choedon'));
+            if (u) {
+                let baseUrl = window.location.href.split('?')[0];
+                let identifiant = u.code || u.nom;
+                let link = `${baseUrl}?u=${encodeURIComponent(identifiant)}`;
+                texte += `\n🔗 *Ton accès rapide ->* ${link}`;
+            }
+
+            let url = `https://wa.me/?text=${encodeURIComponent(texte)}`;
+            window.open(url, '_blank');
+        }
+
+        function envoyerMessageStagiaires() {
+            let rapportDiv = document.getElementById('rapport-bot');
+            let blocks = Array.from(rapportDiv.querySelectorAll('div'));
+
+            let texte = "🎓 *PLANNING STAGIAIRES*\n\n";
+            let count = 0;
+
+            let equipe = getEquipe();
+            let baseUrl = window.location.href.split('?')[0];
+
+            equipe.forEach(u => {
+                if (u.nom.toLowerCase().includes('stagiaire')) {
+                    let userBlock = blocks.find(b => b.innerText.includes(u.nom) && b.style.background);
+                    if (userBlock) {
+                        count++;
+                        texte += `👤 *${u.nom}* :\n`;
+                        texte += getTaskTextOnly(userBlock);
+
+                        let identifiant = u.code || u.nom;
+                        let link = `${baseUrl}?u=${encodeURIComponent(identifiant)}`;
+                        texte += `🔗 Accès direct -> ${link}\n`;
+                        texte += `\n`;
+                    }
+                }
+            });
+
+            if (count === 0) return alert("Aucun stagiaire trouvé dans le rapport.");
+
+            texte += "Bon courage à tous ! 💪";
+            let url = `https://wa.me/?text=${encodeURIComponent(texte)}`;
+            window.open(url, '_blank');
+        }
+
+        // Démarrage
+        initLogin();
+    </script>
+</body>
+
+</html>
