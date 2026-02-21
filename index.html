@@ -946,7 +946,7 @@
             { nom: "Cerise", lits: "180", type: "standard" },
             { nom: "Vison", lits: "180", type: "standard" },
             { nom: "Plume", lits: "180 + 90", type: "distributeurs" },
-            { nom: "Atelier", lits: "180 + 90", type: "cuisine" }
+            { nom: "L'Atelier", lits: "180 + 90", type: "cuisine" }
         ];
 
         // Configuration des parties communes
@@ -1107,6 +1107,47 @@
             }
         } catch (e) { console.error("Erreur init Supabase", e); }
 
+        // --- SYNC SUPABASE CHAMBRES ---
+        // Mapping LocalStorage ↔ Supabase
+        const ETAT_TO_SUPABASE = { "PROPRE": "propre", "A_FAIRE_CLEAN": "a_faire_clean", "A_FAIRE_CHECK": "a_faire_check", "NETTOYE": "nettoye" };
+        const SUPABASE_TO_ETAT = { "propre": "PROPRE", "a_faire_clean": "A_FAIRE_CLEAN", "a_faire_check": "A_FAIRE_CHECK", "nettoye": "NETTOYE", "en_cours": "A_FAIRE_CLEAN", "occupee": "PROPRE" };
+
+        async function chargerEtatsDepuisSupabase() {
+            if (!client) return;
+            try {
+                const { data, error } = await client.from('chambres').select('nom, statut_menage, dispo, auteur_menage');
+                if (error || !data) return;
+                data.forEach(c => {
+                    let etat = SUPABASE_TO_ETAT[c.statut_menage] || "PROPRE";
+                    localStorage.setItem('etat_' + c.nom, etat);
+                    localStorage.setItem('dispo_' + c.nom, c.dispo || 'LIBRE');
+                    if (c.auteur_menage) localStorage.setItem('auteur_' + c.nom, c.auteur_menage);
+                    else localStorage.removeItem('auteur_' + c.nom);
+                });
+            } catch(e) { console.warn('Supabase chambres hors ligne, localStorage utilisé', e); }
+        }
+
+        async function sauvegarderEtatSupabase(nom, etatLocal, dispo, auteur) {
+            if (!client) return;
+            try {
+                await client.from('chambres').update({
+                    statut_menage: ETAT_TO_SUPABASE[etatLocal] || 'propre',
+                    dispo: dispo,
+                    auteur_menage: auteur || '',
+                    updated_menage_at: new Date().toISOString()
+                }).eq('nom', nom);
+            } catch(e) { console.warn('Erreur save Supabase chambre', nom, e); }
+        }
+
+        async function resetChambresSupabase() {
+            if (!client) return;
+            try {
+                await client.from('chambres').update({
+                    statut_menage: 'propre', auteur_menage: '', updated_menage_at: new Date().toISOString()
+                }).in('nom', CONFIG_CHAMBRES.map(c => c.nom));
+            } catch(e) { console.warn('Erreur reset Supabase', e); }
+        }
+
         function ouvrirSousMenu(idVue) {
             // Sécurité : On cache toutes les vues potentielles pour éviter les conflits
             document.querySelectorAll('div[id^="vue-"]').forEach(div => {
@@ -1119,6 +1160,7 @@
             if (target) {
                 target.style.display = 'flex';
                 if (idVue === 'vue-menu-stocks') chargerStocks();
+                if (idVue === 'vue-menu-chambres') initTableauBord();
             }
         }
 
@@ -1363,7 +1405,9 @@
 
         // --- NOUVELLE FONCTIONNALITÉ : TABLEAU DE BORD ---
 
-        function initTableauBord() {
+        async function initTableauBord() {
+            // Charge depuis Supabase en premier (synchro cloud)
+            await chargerEtatsDepuisSupabase();
             const tbody = document.getElementById('corps-tableau');
             tbody.innerHTML = '';
 
@@ -1481,8 +1525,11 @@
 
         function changerDispo(nomChambre) {
             let actuel = localStorage.getItem('dispo_' + nomChambre) || "LIBRE";
-            let nouveau = actuel === "LIBRE" ? "OCCUPÉE" : "LIBRE";
+            let nouveau = actuel === "LIBRE" ? "OCCUPEE" : "LIBRE";
             localStorage.setItem('dispo_' + nomChambre, nouveau);
+            let etatActuel = localStorage.getItem('etat_' + nomChambre) || "PROPRE";
+            let auteur = localStorage.getItem('auteur_' + nomChambre) || "";
+            sauvegarderEtatSupabase(nomChambre, etatActuel, nouveau, auteur);
             initTableauBord();
         }
 
@@ -1532,8 +1579,13 @@
             localStorage.setItem('etat_' + nomChambre, nouveau);
 
             // Signature
-            if (nouveau === "NETTOYE") localStorage.setItem('auteur_' + nomChambre, currentUser.nom);
-            else if (nouveau !== "NETTOYE") localStorage.removeItem('auteur_' + nomChambre);
+            let auteur = "";
+            if (nouveau === "NETTOYE") { auteur = currentUser.nom; localStorage.setItem('auteur_' + nomChambre, auteur); }
+            else localStorage.removeItem('auteur_' + nomChambre);
+
+            // Sync Supabase
+            let dispo = localStorage.getItem('dispo_' + nomChambre) || "LIBRE";
+            sauvegarderEtatSupabase(nomChambre, nouveau, dispo, auteur);
 
             initTableauBord(); // On rafraichit l'affichage
         }
@@ -1541,8 +1593,12 @@
         function nouvelleJournee() {
             if (confirm("Voulez-vous vraiment tout remettre à zéro pour une nouvelle journée ?")) {
                 sauvegarderHistoriqueJournee();
-                CONFIG_CHAMBRES.forEach(c => localStorage.setItem('etat_' + c.nom, "PROPRE"));
+                CONFIG_CHAMBRES.forEach(c => {
+                    localStorage.setItem('etat_' + c.nom, "PROPRE");
+                    localStorage.removeItem('auteur_' + c.nom);
+                });
                 CONFIG_COMMUNS.forEach(z => localStorage.setItem('etat_' + z, "PROPRE"));
+                resetChambresSupabase(); // Reset dans Supabase aussi
                 initTableauBord();
             }
         }
