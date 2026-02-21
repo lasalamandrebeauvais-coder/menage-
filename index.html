@@ -600,6 +600,11 @@
             background: var(--primary);
             color: white;
         }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.7); }
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -635,7 +640,15 @@
 
     <!-- Sous-menu Chambres -->
     <div id="vue-menu-chambres" style="display:none; flex-direction:column; height:100vh; height:100dvh;">
-        <h2 style="text-align: center; padding: 10px;">Gestion des Chambres</h2>
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 14px; border-bottom:1px solid #eee;">
+            <h2 style="margin:0; font-size:1.1rem;">🛏️ Chambres</h2>
+            <div style="display:flex; align-items:center; gap:8px;">
+                <span id="live-indicator" style="display:inline-flex; align-items:center; gap:4px; font-size:0.75rem; color:#10b981; font-weight:600;">
+                    <span style="width:7px;height:7px;border-radius:50%;background:#10b981;display:inline-block;animation:pulse-dot 2s infinite;"></span>LIVE
+                </span>
+                <button onclick="initTableauBord()" style="background:#f0f0f0; border:none; border-radius:6px; padding:5px 10px; font-size:0.8rem; cursor:pointer;">🔄 Refresh</button>
+            </div>
+        </div>
         <div style="padding: 10px; overflow-y: auto; flex-grow: 1;">
             <button id="btn-reset-day"
                 style="background-color: var(--primary-dark); color: white; font-size: 1.2rem; height: 60px; margin-bottom: 20px; border-radius: var(--radius-md); width:100%; display:none; box-shadow:var(--shadow-sm);"
@@ -1148,6 +1161,22 @@
             } catch(e) { console.warn('Erreur reset Supabase', e); }
         }
 
+        // Auto-refresh : polling Supabase toutes les 30s quand vue chambres active
+        let _refreshInterval = null;
+
+        function demarrerAutoRefresh() {
+            arreterAutoRefresh();
+            _refreshInterval = setInterval(() => {
+                if (document.getElementById('vue-menu-chambres').style.display !== 'none') {
+                    initTableauBord(); // déjà async et appelle chargerEtatsDepuisSupabase en premier
+                }
+            }, 30000);
+        }
+
+        function arreterAutoRefresh() {
+            if (_refreshInterval) { clearInterval(_refreshInterval); _refreshInterval = null; }
+        }
+
         function ouvrirSousMenu(idVue) {
             // Sécurité : On cache toutes les vues potentielles pour éviter les conflits
             document.querySelectorAll('div[id^="vue-"]').forEach(div => {
@@ -1160,7 +1189,8 @@
             if (target) {
                 target.style.display = 'flex';
                 if (idVue === 'vue-menu-stocks') chargerStocks();
-                if (idVue === 'vue-menu-chambres') initTableauBord();
+                if (idVue === 'vue-menu-chambres') { initTableauBord(); demarrerAutoRefresh(); }
+                else arreterAutoRefresh();
             }
         }
 
@@ -1169,6 +1199,7 @@
                 if (div.id !== 'vue-login') div.style.display = 'none';
             });
             document.getElementById('menu-principal').style.display = 'flex';
+            arreterAutoRefresh();
             initTableauBord(); // Rafraichir les tables
         }
 
@@ -1410,6 +1441,30 @@
             await chargerEtatsDepuisSupabase();
             const tbody = document.getElementById('corps-tableau');
             tbody.innerHTML = '';
+
+            // Bandeau résumé — chambres urgentes
+            let aFaire = CONFIG_CHAMBRES.filter(c => {
+                let e = localStorage.getItem('etat_' + c.nom) || 'PROPRE';
+                return e === 'A_FAIRE_CLEAN' || e === 'A_FAIRE_CHECK';
+            });
+            let bannerEl = document.getElementById('banner-chambres');
+            if (!bannerEl) {
+                bannerEl = document.createElement('div');
+                bannerEl.id = 'banner-chambres';
+                const tableau = document.getElementById('tableau-chambres');
+                tableau.parentNode.insertBefore(bannerEl, tableau);
+            }
+            if (aFaire.length > 0) {
+                let noms = aFaire.map(c => {
+                    let e = localStorage.getItem('etat_' + c.nom);
+                    return `<b>${c.nom}</b> (${e === 'A_FAIRE_CLEAN' ? '🧹 Nettoyage' : '🔍 Vérif.'})`;
+                }).join(' · ');
+                bannerEl.innerHTML = `<div style="background:#fff3cd; border:2px solid #f59e0b; border-radius:8px; padding:10px 14px; margin-bottom:10px; font-size:0.9rem;">
+                    ⚠️ <b>${aFaire.length} chambre(s) à faire :</b> ${noms}
+                </div>`;
+            } else {
+                bannerEl.innerHTML = '';
+            }
 
             CONFIG_CHAMBRES.forEach(chambre => {
                 let dispo = localStorage.getItem('dispo_' + chambre.nom) || "LIBRE";
